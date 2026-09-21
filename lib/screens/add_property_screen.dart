@@ -7,8 +7,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/listing_payment.dart';
 import '../models/property_type.dart';
 import '../services/api_client.dart';
+import '../services/location_service.dart';
 import '../theme/app_theme.dart';
-import 'location_picker_screen.dart';
+import '../widgets/location_field.dart';
 
 class AddPropertyScreen extends StatefulWidget {
   const AddPropertyScreen({super.key});
@@ -108,15 +109,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   }
 
   Future<void> _pickLocation() async {
-    final result = await Navigator.push<PickedLocation>(
-      context,
-      MaterialPageRoute(builder: (_) => LocationPickerScreen(initial: _location)),
-    );
-    if (result != null) {
+    try {
+      final location = await LocationService.detectCurrent();
+      if (!mounted) return;
       setState(() {
-        _location = result;
-        _area.text = result.label;
+        _location = location;
+        _area.text = location.label;
       });
+    } on LocationFailure catch (failure) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(failure.message)),
+      );
     }
   }
 
@@ -563,17 +567,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           ),
         ),
         const SizedBox(height: 18),
-        _section('Eneo', _area.text.isEmpty ? 'Chagua eneo kwenye ramani' : _area.text),
-        TextFormField(
-          controller: _area,
-          readOnly: true,
-          validator: _required,
-          onTap: _pickLocation,
-          decoration: InputDecoration(
-            labelText: 'Eneo la mali',
-            prefixIcon: const Icon(Icons.location_on_outlined),
-            suffixIcon: IconButton(onPressed: _pickLocation, icon: const Icon(Icons.map_outlined)),
-          ),
+        _section('Eneo', _area.text.isEmpty ? 'Chagua eneo la mali' : _area.text),
+        LocationField(
+          value: _location,
+          onChanged: (location) => setState(() {
+            _location = location;
+            _area.text = location.label;
+          }),
         ),
         const SizedBox(height: 18),
         _section('Uthibitisho wa umiliki', _documentName ?? 'Hati inahitajika'),
@@ -637,10 +637,15 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     final selected = _type == value;
     return InkWell(
       borderRadius: BorderRadius.circular(18),
-      onTap: () => setState(() {
-        _type = value;
-        _error = null;
-      }),
+      onTap: () {
+        setState(() {
+          _type = value;
+          _error = null;
+        });
+        if (_currentStep == 0) {
+          _moveToNextStep();
+        }
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(18),
@@ -680,7 +685,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 ],
               ),
             ),
-            if (selected) const Icon(Icons.check_circle_rounded, color: AppTheme.primary),
+            if (selected) Icon(Icons.check_circle_rounded, color: AppTheme.primary),
           ],
         ),
       ),
