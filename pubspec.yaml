@@ -1,0 +1,33 @@
+name: nyumba_mkononi
+description: Tanzania property marketplace for buyers, renters, sellers, and landlords.
+publish_to: "none"
+version: 1.0.0+1
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  file_picker: ^8.1.2
+  flutter_map: ^7.0.2
+  google_fonts: ^6.2.1
+  http: ^1.2.2
+  geolocator: ^13.0.1
+  latlong2: ^0.9.1
+  shared_preferences: ^2.3.2
+  responsive_builder: ^0.7.1
+  url_launcher: ^6.3.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_native_splash: ^2.4.1
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/images/logo.png
+  android_12:
+    image: assets/images/logo.png
+    color: "#FFFFFF"

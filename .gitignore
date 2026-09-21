@@ -1,0 +1,17 @@
+.dart_tool/
+.packages
+.pub-cache/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub/
+.idea/
+.vscode/
+*.iml
+
+# Local backend secrets
+backend/.env
+backend/venv/
+backend/app/__pycache__/
+backend/uploads/
+.vercel
