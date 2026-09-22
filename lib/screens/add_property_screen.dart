@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 
 import '../models/listing_payment.dart';
 import '../services/api_client.dart';
+import '../services/location_service.dart';
 import '../theme/app_theme.dart';
 import 'location_picker_screen.dart';
 
 class AddPropertyScreen extends StatefulWidget {
   const AddPropertyScreen({super.key});
+
   @override
   State<AddPropertyScreen> createState() => _AddPropertyScreenState();
 }
@@ -20,8 +22,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final _price = TextEditingController();
   final _description = TextEditingController();
   final _area = TextEditingController();
+
   String _type = 'apartment';
   String _mode = 'rent';
+
   bool _wifi = false;
   bool _carParking = false;
   bool _indoorToilet = false;
@@ -37,7 +41,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   Uint8List? _document;
   String? _documentName;
+
   PickedLocation? _location;
+
   bool _loading = false;
   String? _error;
 
@@ -88,7 +94,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   }
 
   // --- Hatua 1: mpangishaji analipa TZS 5,000 kwa ClickPesa (USSD-PUSH) --
-
   Future<String?> _askForPaymentPhone() {
     final controller = TextEditingController();
     return showDialog<String>(
@@ -189,7 +194,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   }
 
   // --- Hatua 2: tuma tangazo (baada ya malipo kufanikiwa) ----------------
-
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_photosComplete || _document == null || _location == null) {
@@ -200,10 +204,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       setState(() => _error = 'Lipa TZS 5,000 kwanza kabla ya kutuma tangazo.');
       return;
     }
+
     setState(() { _loading = true; _error = null; });
     try {
       final photoBytes = _photos.map((photo) => photo!).toList();
       final photoNames = _photoNames.map((name) => name!).toList();
+
       await ApiClient.instance.createProperty(
         paymentRef: _payment!.txRef,
         name: _name.text.trim(),
@@ -227,6 +233,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         verificationDoc: _document!,
         verificationDocName: _documentName!,
       );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tangazo limetumwa. Litapitiwa ndani ya masaa 24.')));
         Navigator.pop(context);
@@ -412,6 +419,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       );
 
   String? _required(String? value) => value == null || value.trim().isEmpty ? 'Sehemu hii inahitajika' : null;
+
   Widget _section(String title, String caption) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Row(
