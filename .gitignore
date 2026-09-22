@@ -2,6 +2,7 @@
 .packages
 .pub-cache/
 build/
+.flutter-sdk/
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub/
