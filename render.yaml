@@ -15,3 +15,15 @@ services:
         value: "60"
       - key: CORS_ORIGINS
         sync: false
+      - key: CLICKPESA_CLIENT_ID
+        sync: false
+      - key: CLICKPESA_API_KEY
+        sync: false
+      - key: CLICKPESA_CHECKSUM_KEY
+        sync: false
+      - key: CLICKPESA_BASE_URL
+        value: "https://api.clickpesa.com/third-parties"
+      - key: PROPERTY_LISTING_FEE
+        value: "5000"
+      - key: PROPERTY_LISTING_CURRENCY
+        value: "TZS"

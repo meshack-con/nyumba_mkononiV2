@@ -109,10 +109,10 @@ class Message(Base):
     sender: Mapped["User"] = relationship(foreign_keys=[sender_id])
     receiver: Mapped["User"] = relationship(foreign_keys=[receiver_id])
 class Payment(Base):
-    """Malipo ya ada ya kutangaza nyumba (TZS 5,000) kupitia Flutterwave.
+    """Malipo ya ada ya kutangaza nyumba (TZS 5,000) kupitia ClickPesa.
 
     Mpangishaji/muuzaji analipa KABLA hajaweza kutuma tangazo jipya la
-    nyumba - `tx_ref` ndio kiungo kati ya malipo haya na Flutterwave, na
+    nyumba - `tx_ref` ndio kiungo kati ya malipo haya na ClickPesa, na
     `property_id` inajazwa pale tangazo linapotengenezwa kwa kutumia
     malipo haya (ili tx_ref moja isitumike mara mbili)."""
     __tablename__ = "payments"

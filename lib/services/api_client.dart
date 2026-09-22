@@ -270,8 +270,11 @@ class ApiClient {
   }
 
   /// Anaanzisha malipo ya ada ya kutangaza nyumba (TZS 5,000) kupitia
-  /// Flutterwave. Inarudisha `txRef` (itahitajika baadaye kutuma tangazo)
-  /// na `redirectLink` (ukurasa wa kufungua kwenye browser kukamilisha malipo).
+  /// ClickPesa (USSD-PUSH). ClickPesa itatuma ombi la kulipa moja kwa
+  /// moja kwenye simu ya muuzaji (`channel` inaonyesha ni mtandao gani -
+  /// M-Pesa/Tigo Pesa/Airtel Money/Halopesa) - HAKUNA ukurasa wa
+  /// browser wa kufungua. Muuzaji anakamilisha kwa kuweka PIN ya simu
+  /// yake, kisha app inapaswa ku-poll `getListingFeePaymentStatus`.
   Future<ListingPayment> initiateListingFeePayment({required String phoneNumber}) async {
     final headers = await _headers(authenticated: true);
     headers['Content-Type'] = 'application/json';
@@ -285,7 +288,7 @@ class ApiClient {
 
   /// Anaangalia hali ya malipo ya ada ya kutangaza nyumba (pending /
   /// successful / failed) - inaitwa mara kwa mara (polling) baada ya
-  /// seller kurudi kutoka ukurasa wa Flutterwave.
+  /// seller kuombwa kuweka PIN kwenye simu yake.
   Future<ListingPayment> getListingFeePaymentStatus(String txRef) async {
     final response = await http.get(
       Uri.parse('$apiBaseUrl/payments/listing-fee/$txRef/status'),

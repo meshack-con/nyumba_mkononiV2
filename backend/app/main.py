@@ -479,7 +479,7 @@ async def create_property(
 
     # --- Hakikisha ada ya TZS 5,000 imelipwa kabla ya kupokea tangazo ---
     # Tangazo halikubaliwi bila malipo halisi, yaliyothibitishwa na
-    # Flutterwave, na tx_ref moja haiwezi kutumika kwenye matangazo
+    # ClickPesa, na tx_ref moja haiwezi kutumika kwenye matangazo
     # mawili (property_id ikishawekwa, tx_ref hiyo "imeisha").
     payment = db.scalar(select(Payment).where(Payment.tx_ref == payment_ref))
     if payment is None or payment.user_id != current_user.id:

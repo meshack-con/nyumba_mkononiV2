@@ -199,7 +199,7 @@ class NotificationResponse(BaseModel):
     other_user_id: int | None = None
 
 
-# --- Malipo ya ada ya kutangaza nyumba (Flutterwave) --------------------
+# --- Malipo ya ada ya kutangaza nyumba (ClickPesa) -----------------------
 
 class PaymentInitiateRequest(BaseModel):
     """Namba ya simu itakayotumika kulipia ada ya TZS 5,000 (haihitajiki
@@ -212,8 +212,11 @@ class PaymentInitiateResponse(BaseModel):
     tx_ref: str
     amount: int
     currency: str
-    redirect_link: str | None = None
     status: str
+    # Mtandao wa simu ulioombwa kutuma USSD-PUSH, mfano "M-PESA",
+    # "TIGO-PESA", "AIRTEL-MONEY" - hutumiwa na app kumwambia muuzaji
+    # aangalie simu yake ya mtandao gani.
+    channel: str | None = None
 
 
 class PaymentStatusResponse(BaseModel):

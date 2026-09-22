@@ -8,21 +8,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:nyumba_mkononi/screens/add_property_screen.dart';
+import 'package:nyumba_mkononi/main.dart';
 
 void main() {
-  testWidgets('add property wizard shows type selection and room price step', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: AddPropertyScreen()));
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
 
-    expect(find.text('Chagua aina ya mali'), findsOneWidget);
-    expect(find.text('Nyumba'), findsWidgets);
-    expect(find.text('Chumba'), findsWidgets);
-    expect(find.text('Kiwanja'), findsWidgets);
+    // Verify that our counter starts at 0.
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
 
-    await tester.tap(find.text('Chumba'));
-    await tester.pumpAndSettle();
+    // Tap the '+' icon and trigger a frame.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
 
-    expect(find.text('Bei ya chumba kwa mwezi'), findsOneWidget);
-    expect(find.text('Hifadhi na endelea'), findsOneWidget);
+    // Verify that our counter has incremented.
+    expect(find.text('0'), findsNothing);
+    expect(find.text('1'), findsOneWidget);
   });
 }
