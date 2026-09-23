@@ -4,6 +4,7 @@ import '../models/notification_item.dart';
 import '../services/api_client.dart';
 import '../theme/app_theme.dart';
 import 'chat_screen.dart';
+import 'notification_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -66,12 +67,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       _load();
       return;
     }
-    if (item.isPlatform && !item.read) {
-      try {
-        await ApiClient.instance.markNotificationRead(item.id);
-      } catch (_) {
-        // Haihitaji kumsumbua mtumiaji ikiwa kusoma kumeshindikana.
+    if (item.isPlatform) {
+      if (!item.read) {
+        try {
+          await ApiClient.instance.markNotificationRead(item.id);
+        } catch (_) {
+          // Haihitaji kumsumbua mtumiaji ikiwa kusoma kumeshindikana.
+        }
       }
+      // Arifa za platform PEKEE (sio ujumbe wa mtu binafsi) zinafunguka
+      // kwa upana kamili wa skrini kuonyesha ujumbe kamili.
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => NotificationDetailScreen(item: item)),
+      );
       _load();
     }
   }
