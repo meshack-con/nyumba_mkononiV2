@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/notification_item.dart';
 import '../theme/app_theme.dart';
 
@@ -16,18 +17,16 @@ class NotificationDetailScreen extends StatelessWidget {
 
   String _formatFull(DateTime dt) {
     final local = dt.toLocal();
-    final months = [
-      'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni',
-      'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba',
-    ];
+    final months = AppStrings.months;
     final time = '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
-    return '${local.day} ${months[local.month - 1]} ${local.year}, saa $time';
+    final atWord = AppStrings.t('notifDetailAtTime');
+    return '${local.day} ${months[local.month - 1]} ${local.year}, $atWord $time';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ujumbe kutoka Nyumba Mkononi')),
+      appBar: AppBar(title: Text(AppStrings.t('notifDetailAppBarTitle'))),
       body: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
