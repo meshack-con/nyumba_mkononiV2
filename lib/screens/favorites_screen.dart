@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/property.dart';
 import '../services/api_client.dart';
 import '../theme/app_theme.dart';
@@ -31,7 +32,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(body: RefreshIndicator(onRefresh: _load, child: ListView(padding: const EdgeInsets.fromLTRB(20, 22, 20, 24), children: [Text('Zilizopendwa', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)), const SizedBox(height: 6), const Text('Nyumba ulizoweka pembeni.', style: TextStyle(color: AppTheme.muted)), const SizedBox(height: 24), if (_loading) const Center(child: CircularProgressIndicator()) else if (_favorites.isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 60), child: Column(children: [Icon(Icons.favorite_border_rounded, size: 48, color: AppTheme.muted), SizedBox(height: 12), Text('Bado hujapenda nyumba yoyote.', style: TextStyle(color: AppTheme.muted))])) else ..._favorites.map((item) => _FavoriteTile(item: item, onRemove: () => _remove(item.property), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PropertyDetailsScreen(property: item.property))))) ])));
+  Widget build(BuildContext context) => Scaffold(body: RefreshIndicator(onRefresh: _load, child: ListView(padding: const EdgeInsets.fromLTRB(20, 22, 20, 24), children: [Text(AppStrings.t('favoritesTitle'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(AppStrings.t('favoritesSubtitle'), style: const TextStyle(color: AppTheme.muted)), const SizedBox(height: 24), if (_loading) const Center(child: CircularProgressIndicator()) else if (_favorites.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 60), child: Column(children: [const Icon(Icons.favorite_border_rounded, size: 48, color: AppTheme.muted), const SizedBox(height: 12), Text(AppStrings.t('favoritesEmpty'), style: const TextStyle(color: AppTheme.muted))])) else ..._favorites.map((item) => _FavoriteTile(item: item, onRemove: () => _remove(item.property), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PropertyDetailsScreen(property: item.property))))) ])));
 }
 
 class _FavoriteTile extends StatelessWidget {
