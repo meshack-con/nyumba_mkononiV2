@@ -78,12 +78,22 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   bool _detectingLocation = false;
   String? _locationError;
 
+  // --- Malipo: maneno ya mchakato yanayobadilika wakati tunasubiri ------
+  static const _paymentProgressMessages = [
+    '📍 Inachakata malipo yako...',
+    '🔄 Inaendelea...',
+    '✅ Inamalizia mchakato...',
+  ];
+  Timer? _paymentProgressTimer;
+  int _paymentMsgIndex = 0;
+
   @override
   void dispose() {
     for (final controller in [_name, _price, _description, _area]) {
       controller.dispose();
     }
     _locationTimer?.cancel();
+    _paymentProgressTimer?.cancel();
     super.dispose();
   }
 
@@ -204,7 +214,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Future<void> _startPaymentFlow() async {
     final phone = await _askForPaymentPhone();
     if (phone == null) return;
-    setState(() { _paymentBusy = true; _paymentError = null; });
+    setState(() { _paymentBusy = true; _paymentError = null; _paymentMsgIndex = 0; });
+    _paymentProgressTimer?.cancel();
+    _paymentProgressTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
+      if (!mounted) return;
+      setState(() => _paymentMsgIndex = (_paymentMsgIndex + 1) % _paymentProgressMessages.length);
+    });
     try {
       final payment = await ApiClient.instance.initiateListingFeePayment(phoneNumber: phone);
       setState(() => _payment = payment);
@@ -219,6 +234,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     } catch (_) {
       setState(() => _paymentError = 'Imeshindikana kuanzisha malipo. Jaribu tena.');
     } finally {
+      _paymentProgressTimer?.cancel();
       if (mounted) setState(() => _paymentBusy = false);
     }
   }
@@ -679,6 +695,25 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _section('Uthibitisho wa umiliki', _documentName ?? 'Hati inahitajika'),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            margin: const EdgeInsets.only(bottom: 14),
+            decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(12)),
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded, color: AppTheme.muted),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Hapa utapakia nyaraka yoyote inayothibitisha umiliki wako wa nyumba hii (inaweza kuwa picha au faili). Nyaraka hii itapitiwa na timu yetu ili kuhakikisha umiliki wako ni halali kabla ya nyumba yako kuwekwa kwenye mfumo.',
+                    style: TextStyle(color: AppTheme.muted, fontSize: 12.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
           OutlinedButton.icon(onPressed: _pickDocument, icon: const Icon(Icons.upload_file_outlined), label: Text(_documentName ?? 'Pakia hati')),
         ],
       );
@@ -710,12 +745,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           if (_paymentError != null) Padding(padding: const EdgeInsets.only(top: 10), child: Text(_paymentError!, style: const TextStyle(color: Colors.red))),
           if (_error != null) Padding(padding: const EdgeInsets.only(top: 14), child: Text(_error!, style: const TextStyle(color: Colors.red))),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(child: OutlinedButton(onPressed: _goBack, child: const Text('Rudi nyuma'))),
-            ],
-          ),
-          const SizedBox(height: 10),
           if (_payment == null || !_payment!.isSuccessful) ...[
             OutlinedButton.icon(
               onPressed: _paymentBusy ? null : _startPaymentFlow,
@@ -724,6 +753,15 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   : const Icon(Icons.payments_outlined),
               label: Text(_payment != null && _payment!.isPending ? 'Thibitisha / jaribu malipo tena' : 'Lipa TZS 10,000 kuendelea'),
             ),
+            if (_paymentBusy) ...[
+              const SizedBox(height: 10),
+              Center(
+                child: Text(
+                  _paymentProgressMessages[_paymentMsgIndex],
+                  style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             const ElevatedButton(onPressed: null, child: Text('Tuma tangazo — lipa kwanza')),
           ] else
