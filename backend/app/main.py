@@ -14,6 +14,7 @@ import cloudinary
 import cloudinary.uploader
 
 from .admin import router as admin_router
+from .ai_assistant import router as ai_router
 from .payments import router as payments_router
 from .auth import create_access_token, get_current_user, hash_password, verify_password
 from .database import Base, engine, get_db, settings
@@ -44,6 +45,7 @@ app = FastAPI(title="Nyumba Mkononi API", version="1.0.0")
 app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 app.include_router(admin_router)
 app.include_router(payments_router)
+app.include_router(ai_router)
 
 cloudinary.config(
     cloud_name=settings.cloudinary_cloud_name,
