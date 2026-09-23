@@ -27,11 +27,14 @@ class _AuthScreenState extends State<AuthScreen> {
   final _phone = TextEditingController();
   final _username = TextEditingController();
   final _password = TextEditingController();
+  final _confirmPassword = TextEditingController();
   final _email = TextEditingController();
   final _area = TextEditingController();
   bool _registering = false;
   bool _seller = false;
   bool _loading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _error;
 
   // --- Eneo: kutafuta kiotomatiki kwa GPS (badala ya kuandika) ----------
@@ -53,7 +56,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   void dispose() {
-    for (final controller in [_fullName, _phone, _username, _password, _email, _area]) controller.dispose();
+    for (final controller in [_fullName, _phone, _username, _password, _confirmPassword, _email, _area]) controller.dispose();
     _locationTimer?.cancel();
     super.dispose();
   }
@@ -182,7 +185,26 @@ class _AuthScreenState extends State<AuthScreen> {
                       ],
                       _field(_username, 'Username', Icons.alternate_email_rounded),
                       const SizedBox(height: 12),
-                      _field(_password, 'Password', Icons.lock_outline_rounded, obscure: true),
+                      _passwordField(
+                        _password,
+                        'Password',
+                        _obscurePassword,
+                        () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                      if (_registering) ...[
+                        const SizedBox(height: 12),
+                        _passwordField(
+                          _confirmPassword,
+                          'Thibitisha password',
+                          _obscureConfirmPassword,
+                          () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) return 'Thibitisha password yako';
+                            if (value != _password.text) return 'Password hazifanani';
+                            return null;
+                          },
+                        ),
+                      ],
                       if (_registering && _seller) ...[
                         const SizedBox(height: 12),
                         _field(_email, 'Barua pepe', Icons.mail_outline_rounded, keyboard: TextInputType.emailAddress),
@@ -227,6 +249,29 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _field(TextEditingController controller, String label, IconData icon, {bool obscure = false, TextInputType? keyboard}) => TextFormField(controller: controller, obscureText: obscure, keyboardType: keyboard, validator: (value) => value == null || value.trim().isEmpty ? 'Jaza $label' : null, decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)));
+
+  /// Sehemu ya password - ina kiicon cha jicho ambacho mtumiaji anaweza
+  /// kugusa ili kuonyesha/kuficha password aliyoingiza.
+  Widget _passwordField(
+    TextEditingController controller,
+    String label,
+    bool obscure,
+    VoidCallback toggleObscure, {
+    String? Function(String?)? validator,
+  }) =>
+      TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        validator: validator ?? (value) => value == null || value.trim().isEmpty ? 'Jaza $label' : null,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: const Icon(Icons.lock_outline_rounded),
+          suffixIcon: IconButton(
+            icon: Icon(obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+            onPressed: toggleObscure,
+          ),
+        ),
+      );
 
   /// Eneo halijazwi kwa kuandika - mtumiaji anabonyeza "Weka eneo" na GPS
   /// ya simu inalijaza kiotomatiki (sawa na jinsi eneo la nyumba linavyowekwa
