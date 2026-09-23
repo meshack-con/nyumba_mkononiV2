@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../theme/app_theme.dart';
 import 'auth_screen.dart';
 import 'buyer_home_screen.dart';
@@ -19,7 +20,7 @@ class RoleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Karibu Nyumba Mkononi', style: TextStyle(fontWeight: FontWeight.w800))),
+      appBar: AppBar(title: Text(AppStrings.t('roleSelectionAppBarTitle'), style: const TextStyle(fontWeight: FontWeight.w800))),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -27,22 +28,22 @@ class RoleSelectionScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
               children: [
-                Text('Unaanza upande gani?', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900)),
+                Text(AppStrings.t('roleSelectionHeading'), style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 10),
-                Text('Chagua jukumu lako. Unaweza kuvinjari bila akaunti.', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme.muted)),
+                Text(AppStrings.t('roleSelectionSubtitle'), style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme.muted)),
                 const SizedBox(height: 34),
                 _RoleCard(
                   icon: Icons.search_rounded,
-                  title: 'Mpangaji au Mnunuzi',
-                  description: 'Tafuta nyumba, linganisha chaguo na upate eneo lako linalofuata.',
+                  title: AppStrings.t('buyerRoleTitle'),
+                  description: AppStrings.t('buyerRoleDescription'),
                   color: AppTheme.primary,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BuyerHomeScreen())),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: Icons.add_business_rounded,
-                  title: 'Muuzaji au Mpangishaji',
-                  description: 'Weka mali yako mbele ya watu wanaotafuta nyumba Tanzania.',
+                  title: AppStrings.t('sellerRoleTitle'),
+                  description: AppStrings.t('sellerRoleDescription'),
                   color: AppTheme.coral,
                   onTap: () => _enterAsSeller(context),
                 ),
