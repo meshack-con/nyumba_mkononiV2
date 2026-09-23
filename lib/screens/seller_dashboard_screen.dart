@@ -141,9 +141,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
       // mbili juu ya nyingine.
       appBar: _tab == 0
           ? AppBar(
-              title: const Text('Dashibodi yako', style: TextStyle(fontWeight: FontWeight.w900)),
               actions: [
-                IconButton(onPressed: _load, icon: const Icon(Icons.refresh_rounded)),
                 Padding(
                   padding: const EdgeInsets.only(right: 14, left: 4),
                   child: InkWell(
