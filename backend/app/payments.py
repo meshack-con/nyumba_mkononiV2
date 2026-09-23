@@ -74,6 +74,14 @@ async def initiate_listing_fee_payment(
         payment.status = PaymentStatus.FAILED
         db.commit()
         raise HTTPException(status_code=502, detail=f"Imeshindikana kuanzisha malipo: {error}") from None
+    except Exception as error:
+        # Huku ndiko kunakoshikwa httpx.ConnectError / TimeoutException /
+        # hitilafu nyingine ya mtandao inapowasiliana na ClickPesa - bila
+        # hii, exception hii inatoroka bila kushikwa na inasababisha 500
+        # isiyo na CORS headers (browser inaonyesha "blocked by CORS").
+        payment.status = PaymentStatus.FAILED
+        db.commit()
+        raise HTTPException(status_code=502, detail=f"Imeshindikana kuwasiliana na ClickPesa: {error}") from None
 
     payment.charge_id = result["transaction_id"]
     if result["status"] == "successful":
