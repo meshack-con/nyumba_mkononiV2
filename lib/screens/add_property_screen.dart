@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/listing_payment.dart';
 import '../services/api_client.dart';
@@ -23,7 +24,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final _description = TextEditingController();
   final _area = TextEditingController();
 
-  String _type = 'apartment';
+  String _type = 'nyumba';
   String _mode = 'rent';
 
   bool _wifi = false;
@@ -87,6 +88,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   }
 
   bool get _photosComplete => _photos.every((photo) => photo != null);
+
+  /// Bei inaonyeshwa kwa mtumiaji ikiwa na comma (mfano 1,000,000) lakini
+  /// tunapotuma kwenye seva au kuithibitisha tunahitaji tarakimu tupu tu.
+  String get _priceDigits => _price.text.replaceAll(',', '').trim();
 
   Future<void> _pickSinglePhoto(int index) async {
     final result = await FilePicker.platform.pickFiles(
@@ -267,9 +272,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       case 0:
         return _photosComplete ? null : 'Weka picha 3 za nyumba kabla ya kuendelea.';
       case 1:
-        if (_name.text.trim().isEmpty) return 'Jaza jina la nyumba.';
-        if (_price.text.trim().isEmpty) return 'Jaza bei ya nyumba.';
-        if (int.tryParse(_price.text.trim()) == null) return 'Bei lazima iwe namba.';
+        if (_name.text.trim().isEmpty) return 'Jaza jina la mtaa au kata.';
+        if (_priceDigits.isEmpty) return 'Jaza bei ya nyumba.';
+        if (int.tryParse(_priceDigits) == null) return 'Bei lazima iwe namba.';
         return null;
       case 2:
         return _description.text.trim().isEmpty ? 'Andika maelezo ya nyumba.' : null;
@@ -327,7 +332,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         name: _name.text.trim(),
         type: _type,
         mode: _mode,
-        price: int.parse(_price.text.trim()),
+        price: int.parse(_priceDigits),
         locationLabel: _area.text.trim(),
         latitude: _location!.point.latitude,
         longitude: _location!.point.longitude,
@@ -554,7 +559,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _section('Taarifa za msingi', 'Eleza nyumba yako kwa uwazi'),
-          TextField(controller: _name, decoration: const InputDecoration(labelText: 'Jina la nyumba', prefixIcon: Icon(Icons.home_work_outlined))),
+          TextField(controller: _name, decoration: const InputDecoration(labelText: 'Jina la mtaa au kata', prefixIcon: Icon(Icons.signpost_outlined))),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(
@@ -562,10 +567,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 value: _type,
                 decoration: const InputDecoration(labelText: 'Aina'),
                 items: const [
-                  DropdownMenuItem(value: 'apartment', child: Text('Apartment')),
+                  DropdownMenuItem(value: 'chumba', child: Text('Chumba')),
                   DropdownMenuItem(value: 'nyumba', child: Text('Nyumba')),
-                  DropdownMenuItem(value: 'studio', child: Text('Studio')),
-                  DropdownMenuItem(value: 'villa', child: Text('Villa')),
+                  DropdownMenuItem(value: 'kiwanja', child: Text('Kiwanja')),
                 ],
                 onChanged: (value) => setState(() => _type = value!),
               ),
@@ -576,7 +580,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 value: _mode,
                 decoration: const InputDecoration(labelText: 'Hali'),
                 items: const [
-                  DropdownMenuItem(value: 'rent', child: Text('Kukodisha')),
+                  DropdownMenuItem(value: 'rent', child: Text('Kupangisha')),
                   DropdownMenuItem(value: 'sale', child: Text('Kuuza')),
                 ],
                 onChanged: (value) => setState(() => _mode = value!),
@@ -584,7 +588,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             ),
           ]),
           const SizedBox(height: 12),
-          TextField(controller: _price, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Bei kwa TZS', prefixIcon: Icon(Icons.payments_outlined))),
+          TextField(
+            controller: _price,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly, _ThousandsSeparatorInputFormatter()],
+            decoration: const InputDecoration(labelText: 'Bei kwa TZS', prefixIcon: Icon(Icons.payments_outlined)),
+          ),
         ],
       );
 
@@ -735,4 +744,26 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           ],
         ),
       );
+}
+
+/// Inaweka comma kila baada ya tarakimu 3 wakati mtumiaji anaandika bei,
+/// mfano akiandika 1000 inakuwa 1,000, akiongeza zaidi inakuwa 1,000,000 -
+/// hii ni kwa ajili ya kusoma kirahisi tu; tarakimu halisi (bila comma)
+/// ndizo zinazotumwa kwenye seva (angalia `_priceDigits`).
+class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.isEmpty) {
+      return const TextEditingValue(text: '');
+    }
+    final formatted = digitsOnly.replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
+    );
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
 }
