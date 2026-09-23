@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     property_listing_fee: int = 5000
     property_listing_currency: str = "TZS"
 
+    # --- Msaidizi wa AI (Groq) - key hii inakaa upande wa server PEKEE,
+    # haiwahi kutumwa kwenda kwenye Flutter web build, hivyo haionekani
+    # kwenye browser ya mtumiaji. ------------------------------------
+    groq_api_key: str = ""
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @field_validator("*", mode="before")
