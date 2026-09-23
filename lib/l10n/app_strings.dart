@@ -8,6 +8,20 @@ class AppStrings {
     return table[key] ?? _sw[key] ?? key;
   }
 
+  /// Majina ya miezi (Jan-Des) kulingana na lugha iliyochaguliwa.
+  static List<String> get months =>
+      LocaleController.instance.isEnglish ? _monthsEn : _monthsSw;
+
+  static const List<String> _monthsSw = [
+    'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni',
+    'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba',
+  ];
+
+  static const List<String> _monthsEn = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+
   static const Map<String, String> _sw = {
     'guest': 'Mgeni',
     'member': 'Mwanachama wa Nyumba Mkononi',
@@ -34,6 +48,24 @@ class AppStrings {
     'feedbackThanks': 'Asante kwa maoni yako!',
     'feedbackEmpty': 'Tafadhali andika maoni kwanza.',
     'feedbackFailed': 'Imeshindwa kutuma maoni. Jaribu tena.',
+
+    // Favorites screen
+    'favoritesTitle': 'Zilizopendwa',
+    'favoritesSubtitle': 'Nyumba ulizoweka pembeni.',
+    'favoritesEmpty': 'Bado hujapenda nyumba yoyote.',
+
+    // Notification detail screen
+    'notifDetailAppBarTitle': 'Ujumbe kutoka Nyumba Mkononi',
+    'notifDetailAtTime': 'saa',
+
+    // Role selection screen
+    'roleSelectionAppBarTitle': 'Karibu Nyumba Mkononi',
+    'roleSelectionHeading': 'Unaanza upande gani?',
+    'roleSelectionSubtitle': 'Chagua jukumu lako. Unaweza kuvinjari bila akaunti.',
+    'buyerRoleTitle': 'Mpangaji au Mnunuzi',
+    'buyerRoleDescription': 'Tafuta nyumba, linganisha chaguo na upate eneo lako linalofuata.',
+    'sellerRoleTitle': 'Muuzaji au Mpangishaji',
+    'sellerRoleDescription': 'Weka mali yako mbele ya watu wanaotafuta nyumba Tanzania.',
   };
 
   static const Map<String, String> _en = {
@@ -62,5 +94,23 @@ class AppStrings {
     'feedbackThanks': 'Thank you for your feedback!',
     'feedbackEmpty': 'Please write your feedback first.',
     'feedbackFailed': 'Could not send feedback. Please try again.',
+
+    // Favorites screen
+    'favoritesTitle': 'Favorites',
+    'favoritesSubtitle': 'Properties you have saved.',
+    'favoritesEmpty': 'You have not favorited any property yet.',
+
+    // Notification detail screen
+    'notifDetailAppBarTitle': 'Message from Nyumba Mkononi',
+    'notifDetailAtTime': 'at',
+
+    // Role selection screen
+    'roleSelectionAppBarTitle': 'Welcome to Nyumba Mkononi',
+    'roleSelectionHeading': 'Which side are you starting from?',
+    'roleSelectionSubtitle': 'Choose your role. You can browse without an account.',
+    'buyerRoleTitle': 'Tenant or Buyer',
+    'buyerRoleDescription': 'Search homes, compare options and find your next place.',
+    'sellerRoleTitle': 'Seller or Landlord',
+    'sellerRoleDescription': 'Put your property in front of people looking for homes in Tanzania.',
   };
 }
