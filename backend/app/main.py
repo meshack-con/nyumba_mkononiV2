@@ -2,8 +2,9 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import and_, func, or_, select, text, update
 from sqlalchemy.exc import IntegrityError
@@ -59,6 +60,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(Exception)
+async def _unhandled_exception_handler(request: Request, exc: Exception):
+    """Bila hii, exception yoyote isiyoshikwa ndani ya endpoint (mfano
+    httpx.ConnectError kwenda ClickPesa, IntegrityError ya database,
+    n.k.) inasababisha 500 ambayo inapita NJE ya CORSMiddleware -
+    browser haipati Access-Control-Allow-Origin header kabisa na
+    inaripoti "blocked by CORS policy" ingawa CORS haihusiki. Handler
+    hii inahakikisha hata error zisizotarajiwa zinarudisha header sahihi
+    ili frontend ipate ujumbe wa kawaida wa 500 badala ya kufeli kimya."""
+    origin = request.headers.get("origin")
+    headers = {}
+    if origin and origin in origins:
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Hitilafu ya ndani ya server. Jaribu tena baadaye."},
+        headers=headers,
+    )
 
 
 @app.on_event("startup")
