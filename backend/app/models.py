@@ -7,10 +7,9 @@ class UserRole(str, Enum):
     BUYER = "buyer"
     SELLER = "seller"
 class PropertyType(str, Enum):
-    APARTMENT = "apartment"
+    CHUMBA = "chumba"
     NYUMBA = "nyumba"
-    STUDIO = "studio"
-    VILLA = "villa"
+    KIWANJA = "kiwanja"
 class PropertyMode(str, Enum):
     RENT = "rent"
     SALE = "sale"
