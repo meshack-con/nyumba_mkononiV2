@@ -185,61 +185,247 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     );
   }
 
+  // ---------------------------------------------------------------------
+  // MUONEKANO (UI) MPYA WA DASHIBODI - mantiki/ma-API calls hayajabadilika,
+  // sehemu hii inahusu tu jinsi taarifa zinavyopangwa kwenye skrini.
+  // ---------------------------------------------------------------------
+
   Widget _dashboardBody() {
     final approved = _properties.where((item) => item.status == 'approved').length;
     final pending = _properties.where((item) => item.status == 'pending').length;
-    return RefreshIndicator(onRefresh: _load, child: ListView(padding: const EdgeInsets.fromLTRB(20, 8, 20, 100), children: [
-        Text(
-          _currentUser != null ? 'Karibu, ${_currentUser!.fullName}' : 'Tangazo lako, mwanzo wa safari ya mtu.',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 22),
-        Row(children: [_Stat(label: 'Jumla', value: '${_properties.length}', color: AppTheme.primary), const SizedBox(width: 10), _Stat(label: 'Imeidhinishwa', value: '$approved', color: AppTheme.success), const SizedBox(width: 10), _Stat(label: 'Inapitiwa', value: '$pending', color: AppTheme.primaryContainer)]),
-        const SizedBox(height: 28),
-        Text('Mali zako', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
-        const SizedBox(height: 12),
-        if (_loading) const Center(child: Padding(padding: EdgeInsets.all(36), child: CircularProgressIndicator())) else if (_properties.isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 50), child: Column(children: [Icon(Icons.add_business_outlined, size: 48, color: AppTheme.muted), SizedBox(height: 12), Text('Bado hujaweka nyumba.', style: TextStyle(color: AppTheme.muted))])) else ..._properties.map((property) => Card(margin: const EdgeInsets.only(bottom: 12), child: ListTile(
-          contentPadding: const EdgeInsets.all(10),
-          leading: ClipRRect(borderRadius: BorderRadius.circular(9), child: SizedBox(width: 70, height: 70, child: property.photoUrls.isEmpty ? const ColoredBox(color: AppTheme.sand, child: Icon(Icons.home)) : Image.network(ApiClient.instance.assetUrl(property.photoUrls.first), fit: BoxFit.cover))),
-          title: Text(property.name, style: const TextStyle(fontWeight: FontWeight.w800)),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('${property.locationLabel}\n${property.formattedPrice}'),
-              const SizedBox(height: 6),
-              Wrap(spacing: 12, runSpacing: 4, children: [
-                _MiniStat(icon: Icons.visibility_outlined, value: '${property.viewCount}'),
-                _MiniStat(icon: Icons.favorite_outline_rounded, value: '${property.favoritesCount}'),
-                if (property.unreadMessagesCount > 0) _MiniStat(icon: Icons.mark_chat_unread_outlined, value: '${property.unreadMessagesCount}', color: AppTheme.coral),
-              ]),
-            ]),
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 110),
+        children: [
+          _welcomeCard(approved, pending),
+          const SizedBox(height: 28),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Mali zako', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+              if (_properties.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(20)),
+                  child: Text('${_properties.length}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppTheme.muted)),
+                ),
+            ],
           ),
-          isThreeLine: true,
-          trailing: Column(mainAxisSize: MainAxisSize.min, children: [
-            _StatusBadge(status: property.status),
-            PopupMenuButton<String>(
-              padding: EdgeInsets.zero,
-              icon: const Icon(Icons.more_vert_rounded, color: AppTheme.muted, size: 20),
-              onSelected: (value) {
-                if (value == 'edit') _editProperty(property);
-                if (value == 'delete') _deleteProperty(property);
-              },
-              itemBuilder: (_) => const [
-                PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit_outlined, size: 18), SizedBox(width: 8), Text('Hariri')])),
-                PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete_outline_rounded, size: 18, color: Colors.red), SizedBox(width: 8), Text('Futa', style: TextStyle(color: Colors.red))])),
+          const SizedBox(height: 14),
+          if (_loading)
+            const Center(child: Padding(padding: EdgeInsets.all(46), child: CircularProgressIndicator()))
+          else if (_properties.isEmpty)
+            _emptyState()
+          else
+            ..._properties.map(_propertyCard),
+        ],
+      ),
+    );
+  }
+
+  /// Kadi ya karibisho juu ya dashibodi - inaonyesha jina la mtumiaji na
+  /// takwimu tatu kuu kwa mtazamo mmoja, kwa muonekano wa kisasa zaidi
+  /// kuliko masanduku matatu ya awali.
+  Widget _welcomeCard(int approved, int pending) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppTheme.primary, AppTheme.primary.withOpacity(0.72)],
+          ),
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [
+            BoxShadow(color: AppTheme.primary.withOpacity(0.28), blurRadius: 22, offset: const Offset(0, 12)),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _currentUser != null ? 'Karibu, ${_currentUser!.fullName.split(' ').first}' : 'Karibu tena',
+              style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Fuatilia matangazo yako ya nyumba hapa.',
+              style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 12.5),
+            ),
+            const SizedBox(height: 22),
+            Row(
+              children: [
+                _StatChip(icon: Icons.home_work_rounded, value: '${_properties.length}', label: 'Jumla'),
+                const SizedBox(width: 10),
+                _StatChip(icon: Icons.verified_rounded, value: '$approved', label: 'Imeidhinishwa'),
+                const SizedBox(width: 10),
+                _StatChip(icon: Icons.hourglass_top_rounded, value: '$pending', label: 'Inapitiwa'),
               ],
             ),
-          ]),
-        )))
-    ]));
-  }
+          ],
+        ),
+      );
+
+  /// Muonekano mpya wa "hakuna nyumba bado" - una kitufe cha moja kwa moja
+  /// cha kuongeza tangazo la kwanza.
+  Widget _emptyState() => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color ?? Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.sand),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(color: AppTheme.sand, shape: BoxShape.circle),
+              child: const Icon(Icons.add_home_work_outlined, size: 34, color: AppTheme.muted),
+            ),
+            const SizedBox(height: 16),
+            const Text('Bado hujaweka nyumba', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+            const SizedBox(height: 6),
+            const Text(
+              'Anza kwa kuongeza tangazo la kwanza la nyumba yako.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppTheme.muted, fontSize: 12.5),
+            ),
+            const SizedBox(height: 18),
+            FilledButton.icon(
+              onPressed: _addProperty,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Weka nyumba'),
+            ),
+          ],
+        ),
+      );
+
+  /// Kadi moja ya nyumba - imepangwa upya kwa muonekano wa kisasa zaidi
+  /// (picha kubwa zaidi, kivuli laini, taarifa zilizopangiliwa vizuri) huku
+  /// vitendo vyote (Hariri / Futa) vikibaki vilevile kimantiki.
+  Widget _propertyCard(Property property) => Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color ?? Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 14, offset: const Offset(0, 5))],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: SizedBox(
+                width: 88,
+                height: 88,
+                child: property.photoUrls.isEmpty
+                    ? const ColoredBox(color: AppTheme.sand, child: Icon(Icons.home_rounded, color: AppTheme.muted))
+                    : Image.network(ApiClient.instance.assetUrl(property.photoUrls.first), fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          property.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.more_vert_rounded, color: AppTheme.muted, size: 20),
+                        onSelected: (value) {
+                          if (value == 'edit') _editProperty(property);
+                          if (value == 'delete') _deleteProperty(property);
+                        },
+                        itemBuilder: (_) => const [
+                          PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit_outlined, size: 18), SizedBox(width: 8), Text('Hariri')])),
+                          PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete_outline_rounded, size: 18, color: Colors.red), SizedBox(width: 8), Text('Futa', style: TextStyle(color: Colors.red))])),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      _StatusBadge(status: property.status),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.place_outlined, size: 13, color: AppTheme.muted),
+                      const SizedBox(width: 2),
+                      Expanded(
+                        child: Text(
+                          property.locationLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: AppTheme.muted, fontSize: 11.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    property.formattedPrice,
+                    style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w900, fontSize: 14.5),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 14,
+                    runSpacing: 4,
+                    children: [
+                      _MiniStat(icon: Icons.visibility_outlined, value: '${property.viewCount}'),
+                      _MiniStat(icon: Icons.favorite_outline_rounded, value: '${property.favoritesCount}'),
+                      if (property.unreadMessagesCount > 0)
+                        _MiniStat(icon: Icons.mark_chat_unread_outlined, value: '${property.unreadMessagesCount}', color: AppTheme.coral),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value, required this.color});
-  final String label, value; final Color color;
+/// Chip ndogo yenye ikoni, thamani na lebo - inatumika kwenye kadi ya
+/// karibisho (welcome card) juu ya dashibodi.
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.icon, required this.value, required this.label});
+  final IconData icon;
+  final String value;
+  final String label;
   @override
-  Widget build(BuildContext context) => Expanded(child: Container(padding: const EdgeInsets.all(15), decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(14)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(value, style: const TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w900)), const SizedBox(height: 4), Text(label, style: const TextStyle(color: Colors.white, fontSize: 11))])));
+  Widget build(BuildContext context) => Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), borderRadius: BorderRadius.circular(16)),
+          child: Column(
+            children: [
+              Icon(icon, color: Colors.white, size: 18),
+              const SizedBox(height: 6),
+              Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 10),
+              ),
+            ],
+          ),
+        ),
+      );
 }
 
 class _MiniStat extends StatelessWidget {
@@ -261,5 +447,5 @@ class _MiniStat extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status}); final String status;
   @override
-  Widget build(BuildContext context) { final approved = status == 'approved'; final expired = status == 'expired'; final color = approved ? AppTheme.success : expired ? AppTheme.muted : AppTheme.primary; final label = approved ? 'Imeidhinishwa' : expired ? 'Imeisha' : 'Inapitiwa'; return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: color.withAlpha(31), borderRadius: BorderRadius.circular(8)), child: Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w800))); }
+  Widget build(BuildContext context) { final approved = status == 'approved'; final expired = status == 'expired'; final color = approved ? AppTheme.success : expired ? AppTheme.muted : AppTheme.primary; final label = approved ? 'Imeidhinishwa' : expired ? 'Imeisha' : 'Inapitiwa'; return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: color.withAlpha(31), borderRadius: BorderRadius.circular(8)), child: Text(label, style: TextStyle(color: color, fontSize: 10.5, fontWeight: FontWeight.w800))); }
 }
