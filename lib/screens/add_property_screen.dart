@@ -47,7 +47,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   bool _loading = false;
   String? _error;
 
-  // --- Malipo ya ada ya kutangaza nyumba (TZS 5,000 - ClickPesa USSD-PUSH) -
+  // --- Malipo ya ada ya kutangaza nyumba (TZS 10,000 - ClickPesa USSD-PUSH) -
   ListingPayment? _payment;
   bool _paymentBusy = false;
   String? _paymentError;
@@ -93,13 +93,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     if (result != null) setState(() { _location = result; _area.text = result.label; });
   }
 
-  // --- Hatua 1: mpangishaji analipa TZS 5,000 kwa ClickPesa (USSD-PUSH) --
+  // --- Hatua 1: mpangishaji analipa TZS 10,000 kwa ClickPesa (USSD-PUSH) --
   Future<String?> _askForPaymentPhone() {
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Lipa TZS 5,000'),
+        title: const Text('Lipa TZS 10,000'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +177,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             content: Text(
               _paymentBusy
                   ? 'Tunaangalia hali ya malipo yako...'
-                  : 'Angalia simu yako${channel != null ? ' ya $channel' : ''} - utaona ombi la kuweka PIN ili kuidhinisha malipo ya TZS 5,000. '
+                  : 'Angalia simu yako${channel != null ? ' ya $channel' : ''} - utaona ombi la kuweka PIN ili kuidhinisha malipo ya TZS 10,000. '
                       'Ukishaweka PIN, bonyeza "Nimeshalipa" hapa kuthibitisha.',
             ),
             actions: [
@@ -201,7 +201,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       return;
     }
     if (_payment == null || !_payment!.isSuccessful) {
-      setState(() => _error = 'Lipa TZS 5,000 kwanza kabla ya kutuma tangazo.');
+      setState(() => _error = 'Lipa TZS 10,000 kwanza kabla ya kutuma tangazo.');
       return;
     }
 
@@ -388,8 +388,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     Expanded(
                       child: Text(
                         _payment?.isSuccessful == true
-                            ? 'Malipo ya TZS 5,000 yamekamilika. Sasa unaweza kutuma tangazo.'
-                            : 'Malipo ya tangazo ni TZS 5,000 (kupitia ClickPesa - M-Pesa/Tigo Pesa/Airtel Money/Halopesa). Tangazo litapitiwa ndani ya masaa 24 baada ya kutumwa.',
+                            ? 'Malipo ya TZS 10,000 yamekamilika. Sasa unaweza kutuma tangazo.'
+                            : 'Malipo ya tangazo ni TZS 10,000 (kupitia ClickPesa - M-Pesa/Tigo Pesa/Airtel Money/Halopesa). Tangazo litapitiwa ndani ya masaa 24 baada ya kutumwa.',
                       ),
                     ),
                   ],
@@ -404,7 +404,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   icon: _paymentBusy
                       ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.payments_outlined),
-                  label: Text(_payment != null && _payment!.isPending ? 'Thibitisha / jaribu malipo tena' : 'Lipa TZS 5,000 kuendelea'),
+                  label: Text(_payment != null && _payment!.isPending ? 'Thibitisha / jaribu malipo tena' : 'Lipa TZS 10,000 kuendelea'),
                 ),
                 const SizedBox(height: 10),
                 const ElevatedButton(onPressed: null, child: Text('Tuma tangazo — lipa kwanza')),
