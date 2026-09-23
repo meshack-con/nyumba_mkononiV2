@@ -1,5 +1,6 @@
 from collections.abc import Generator
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
@@ -36,6 +37,18 @@ class Settings(BaseSettings):
     property_listing_currency: str = "TZS"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def _strip_whitespace(cls, value):
+        # Env vars zilizowekwa kwenye Render (au popote) mara nyingi
+        # zinakuja na "\n" au nafasi mwishoni pale zinapo-copy-paste -
+        # HTTP haikubali "\n" kwenye header value, hivyo httpx inatupa
+        # "Illegal header value". Hii inasafisha thamani ZOTE za string
+        # mara moja badala ya kila mahali kwenye msimbo.
+        if isinstance(value, str):
+            return value.strip()
+        return value
 
 
 settings = Settings()
