@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../services/api_client.dart';
+import '../services/location_service.dart';
 import '../theme/app_theme.dart';
 
 Future<bool> ensureAuthenticated(BuildContext context, {required bool asSeller}) async {
@@ -31,6 +34,17 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _loading = false;
   String? _error;
 
+  // --- Eneo: kutafuta kiotomatiki kwa GPS (badala ya kuandika) ----------
+  static const _locationProgressMessages = [
+    'Inaendelea...',
+    'Inachakata eneo lako...',
+    'Bado kidogo...',
+  ];
+  Timer? _locationTimer;
+  int _locationMsgIndex = 0;
+  bool _detectingLocation = false;
+  String? _locationError;
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +54,40 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void dispose() {
     for (final controller in [_fullName, _phone, _username, _password, _email, _area]) controller.dispose();
+    _locationTimer?.cancel();
     super.dispose();
+  }
+
+  /// Njia kuu ya kuweka eneo: bonyeza kitufe kimoja, GPS ya simu inatafuta
+  /// eneo kiotomatiki - hakuna kuandika kwa mkono kunakohitajika.
+  Future<void> _autoDetectLocation() async {
+    setState(() {
+      _detectingLocation = true;
+      _locationError = null;
+      _locationMsgIndex = 0;
+    });
+    _locationTimer?.cancel();
+    _locationTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
+      if (!mounted) return;
+      setState(() => _locationMsgIndex = (_locationMsgIndex + 1) % _locationProgressMessages.length);
+    });
+    try {
+      final result = await LocationService.detectCurrent();
+      _locationTimer?.cancel();
+      if (!mounted) return;
+      setState(() {
+        _area.text = result.label;
+        _detectingLocation = false;
+      });
+    } on LocationFailure catch (failure) {
+      _locationTimer?.cancel();
+      if (!mounted) return;
+      setState(() { _detectingLocation = false; _locationError = failure.message; });
+    } catch (_) {
+      _locationTimer?.cancel();
+      if (!mounted) return;
+      setState(() { _detectingLocation = false; _locationError = 'Imeshindikana kupata eneo lako. Jaribu tena.'; });
+    }
   }
 
   Future<void> _submit() async {
@@ -140,7 +187,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         const SizedBox(height: 12),
                         _field(_email, 'Barua pepe', Icons.mail_outline_rounded, keyboard: TextInputType.emailAddress),
                         const SizedBox(height: 12),
-                        _field(_area, 'Eneo', Icons.location_on_outlined),
+                        _areaField(),
                       ],
                       if (_registering && widget.lockRole == null) ...[
                         const SizedBox(height: 18),
@@ -180,4 +227,42 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _field(TextEditingController controller, String label, IconData icon, {bool obscure = false, TextInputType? keyboard}) => TextFormField(controller: controller, obscureText: obscure, keyboardType: keyboard, validator: (value) => value == null || value.trim().isEmpty ? 'Jaza $label' : null, decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)));
+
+  /// Eneo halijazwi kwa kuandika - mtumiaji anabonyeza "Weka eneo" na GPS
+  /// ya simu inalijaza kiotomatiki (sawa na jinsi eneo la nyumba linavyowekwa
+  /// kwenye fomu ya "Weka nyumba").
+  Widget _areaField() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: _area,
+            readOnly: true,
+            validator: (value) => value == null || value.trim().isEmpty ? 'Bonyeza "Weka eneo" kupata eneo lako' : null,
+            decoration: const InputDecoration(
+              labelText: 'Eneo',
+              hintText: 'Bonyeza kitufe hapa chini kupata eneo lako',
+              prefixIcon: Icon(Icons.location_on_outlined),
+            ),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: _detectingLocation ? null : _autoDetectLocation,
+            icon: _detectingLocation
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Icon(Icons.my_location_rounded),
+            label: Text(_area.text.isEmpty ? 'Weka eneo' : 'Tafuta eneo tena'),
+          ),
+          if (_detectingLocation) ...[
+            const SizedBox(height: 8),
+            Text(
+              _locationProgressMessages[_locationMsgIndex],
+              style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic, fontSize: 12),
+            ),
+          ],
+          if (_locationError != null) ...[
+            const SizedBox(height: 8),
+            Text(_locationError!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+          ],
+        ],
+      );
 }
