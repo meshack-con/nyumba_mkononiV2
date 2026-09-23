@@ -71,7 +71,16 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     // Kwa hatua hii mtumiaji tayari ame-authenticate (angeshaondolewa hapo awali
     // kama sivyo), lakini tunaacha ukaguzi huu kama ulinzi wa ziada.
     if (!await ensureAuthenticated(context, asSeller: true) || !mounted) return;
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddPropertyScreen()));
+    // Fomu ya "Weka nyumba" inaonyeshwa kama kadi (card) inayopanda kutoka
+    // chini ya skrini - siyo ukurasa mpya - mara tu mtumiaji anapobonyeza
+    // kitufe hiki.
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const AddPropertyScreen(),
+    );
     _load();
   }
 
