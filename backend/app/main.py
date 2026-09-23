@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -37,6 +38,8 @@ from .schemas import (
     UserUpdate,
 )
 
+logger = logging.getLogger("nyumba_mkononi")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 UPLOADS_DIR = BASE_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
@@ -72,7 +75,14 @@ async def _unhandled_exception_handler(request: Request, exc: Exception):
     browser haipati Access-Control-Allow-Origin header kabisa na
     inaripoti "blocked by CORS policy" ingawa CORS haihusiki. Handler
     hii inahakikisha hata error zisizotarajiwa zinarudisha header sahihi
-    ili frontend ipate ujumbe wa kawaida wa 500 badala ya kufeli kimya."""
+    ili frontend ipate ujumbe wa kawaida wa 500 badala ya kufeli kimya.
+
+    Tunaandika (log) traceback halisi hapa kabla ya kurudisha ujumbe wa
+    jumla - bila hii ujumbe halisi wa error (mfano jina la column
+    lisilopo kwenye DB, au Cloudinary kukataa credentials) unapotea kabisa
+    na hauonekani popote, na kufanya idhibiti kuwa vigumu. Angalia logs za
+    server (Render/Railway n.k.) kuona traceback hii."""
+    logger.exception("Unhandled error on %s %s", request.method, request.url.path, exc_info=exc)
     origin = request.headers.get("origin")
     headers = {}
     if origin and origin in origins:
@@ -131,14 +141,26 @@ async def save_upload(upload: UploadFile, folder: str) -> str:
     allowed_extensions = {".jpg", ".jpeg", ".png", ".webp", ".pdf"}
     if extension not in allowed_extensions:
         raise HTTPException(status_code=400, detail="Aina ya file hairuhusiwi")
+    if not (settings.cloudinary_cloud_name and settings.cloudinary_api_key and settings.cloudinary_api_secret):
+        # Env variables CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY /
+        # CLOUDINARY_API_SECRET hazijawekwa (au ziko tupu) kwenye server -
+        # bila hizi, cloudinary.uploader.upload() inashindwa kila mara na
+        # inakuwa 500 isiyoeleweka upande wa app. Tunakagua mapema na
+        # kutoa ujumbe wa wazi badala yake.
+        logger.error("Cloudinary haijawekewa mipangilio - CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET hazipo kwenye env ya server.")
+        raise HTTPException(status_code=500, detail="Upakiaji wa picha haujawekewa mipangilio kwenye server. Wasiliana na msimamizi wa mfumo.")
     contents = await upload.read()
     resource_type = "raw" if extension == ".pdf" else "image"
-    result = cloudinary.uploader.upload(
-        contents,
-        folder=f"nyumba_mkononi/{folder}",
-        resource_type=resource_type,
-        public_id=uuid4().hex,
-    )
+    try:
+        result = cloudinary.uploader.upload(
+            contents,
+            folder=f"nyumba_mkononi/{folder}",
+            resource_type=resource_type,
+            public_id=uuid4().hex,
+        )
+    except Exception:
+        logger.exception("Cloudinary upload imeshindikana (folder=%s, filename=%s)", folder, upload.filename)
+        raise HTTPException(status_code=502, detail="Imeshindikana kupakia faili. Jaribu tena baadaye.")
     return result["secure_url"]
 
 
