@@ -8,7 +8,7 @@ import 'add_property_screen.dart';
 import 'auth_screen.dart';
 import 'edit_property_screen.dart';
 import 'messages_inbox_screen.dart';
-import 'profile_screen.dart';
+import 'personal_info_screen.dart';
 
 class SellerDashboardScreen extends StatefulWidget {
   const SellerDashboardScreen({super.key});
@@ -55,8 +55,10 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     }
   }
 
+  /// Kubonyeza herufi ya kwanza ya jina (avatar) juu ya dashibodi kunampeleka
+  /// mtumiaji moja kwa moja kwenye "Taarifa binafsi" zake.
   Future<void> _openProfile() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const PersonalInfoScreen()));
     _loadCurrentUser();
   }
 
@@ -163,7 +165,11 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
               ],
             )
           : null,
-      floatingActionButton: _tab == 0
+      // Kitufe cha "Weka nyumba" cha FAB (chini kulia) kinaonekana TU baada
+      // ya mtumiaji kuwa na nyumba moja au zaidi. Kabla ya hapo, kitufe
+      // pekee cha kuweka nyumba ni kile cha katikati ndani ya "empty state"
+      // (_emptyState) - kamwe visionekane vyote viwili kwa wakati mmoja.
+      floatingActionButton: _tab == 0 && !_loading && _properties.isNotEmpty
           ? FloatingActionButton.extended(onPressed: _addProperty, backgroundColor: AppTheme.coral, foregroundColor: Colors.white, icon: const Icon(Icons.add_rounded), label: const Text('Weka nyumba'))
           : null,
       // Sehemu ya "Ujumbe" iko kwenye button bar chini (siyo juu kabisa) ili
