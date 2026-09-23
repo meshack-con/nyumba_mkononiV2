@@ -359,38 +359,68 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     }
   }
 
+  // Fomu hii inaonyeshwa kama "card" ya modal inayopanda kutoka chini
+  // (bottom sheet) badala ya ukurasa mzima - ndiyo maana hakuna Scaffold/
+  // AppBar hapa; badala yake tunajenga kadi yenye pembe za mviringo juu,
+  // "drag handle", na kichwa chenye kitufe cha kufunga (X).
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Weka nyumba mpya', style: TextStyle(fontWeight: FontWeight.w800))),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: _stepHeader(),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                  children: [
-                    if (_stepError != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(color: Colors.red.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
-                          child: Text(_stepError!, style: const TextStyle(color: Colors.red)),
-                        ),
-                      ),
-                    _buildStepContent(_step),
-                  ],
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Padding(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 24),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        child: Container(
+          height: screenHeight * 0.92,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 24, offset: Offset(0, -4))],
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(width: 42, height: 5, decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(3))),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 8, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Weka nyumba mpya', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19)),
+                      IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded)),
+                    ],
+                  ),
                 ),
-              ),
-              _bottomNav(),
-            ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+                  child: _stepHeader(),
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                    children: [
+                      if (_stepError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 14),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(color: Colors.red.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
+                            child: Text(_stepError!, style: const TextStyle(color: Colors.red)),
+                          ),
+                        ),
+                      _buildStepContent(_step),
+                    ],
+                  ),
+                ),
+                _bottomNav(),
+              ],
+            ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Widget _stepHeader() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
