@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_strings.dart';
 import 'api_client.dart' show apiBaseUrl;
 
 /// Msaidizi wa AI sasa unapita kwenye backend yetu (`/ai/chat`) badala ya
@@ -22,12 +23,12 @@ class GroqService {
       body: jsonEncode({'messages': history}),
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      String detail = 'kosa ${response.statusCode}';
+      String detail = AppStrings.tParams('genericErrorCode', {'code': '${response.statusCode}'});
       try {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         if (body['detail'] != null) detail = body['detail'].toString();
       } catch (_) {}
-      throw GroqException('Imeshindikana kuwasiliana na msaidizi ($detail). Jaribu tena.');
+      throw GroqException(AppStrings.tParams('assistantConnectFailed', {'detail': detail}));
     }
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     return (data['content'] as String).trim();
