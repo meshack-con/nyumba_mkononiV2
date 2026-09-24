@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/property.dart';
 import '../models/property_type.dart';
 import '../services/api_client.dart';
@@ -90,13 +91,13 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
         description: _description.text.trim(),
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tangazo limehaririwa.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.t('propertyUpdated'))));
         Navigator.pop(context, true);
       }
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Imeshindikana kuhariri tangazo.');
+      setState(() => _error = AppStrings.t('propertyUpdateFailed'));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -104,24 +105,24 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Hariri tangazo', style: TextStyle(fontWeight: FontWeight.w800))),
+        appBar: AppBar(title: Text(AppStrings.t('editPropertyTitle'), style: const TextStyle(fontWeight: FontWeight.w800))),
         body: Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
             children: [
-              _section('Taarifa za msingi', 'Eleza nyumba yako kwa uwazi'),
-              TextFormField(controller: _name, validator: _required, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(labelText: 'Jina la mtaa / kata', hintText: 'Mfano: Sinza, Mikocheni', prefixIcon: Icon(Icons.location_city_outlined))),
+              _section(AppStrings.t('basicInfoSection'), AppStrings.t('basicInfoCaption')),
+              TextFormField(controller: _name, validator: _required, textCapitalization: TextCapitalization.words, decoration: InputDecoration(labelText: AppStrings.t('streetWardLabel'), hintText: AppStrings.t('streetWardHint'), prefixIcon: const Icon(Icons.location_city_outlined))),
               const SizedBox(height: 12),
               Row(children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _type,
-                    decoration: const InputDecoration(labelText: 'Aina'),
-                    items: const [
-                      DropdownMenuItem(value: PropertyTypes.chumba, child: Text('Chumba')),
-                      DropdownMenuItem(value: PropertyTypes.nyumba, child: Text('Nyumba')),
-                      DropdownMenuItem(value: PropertyTypes.kiwanja, child: Text('Kiwanja')),
+                    decoration: InputDecoration(labelText: AppStrings.t('typeLabel')),
+                    items: [
+                      DropdownMenuItem(value: PropertyTypes.chumba, child: Text(AppStrings.t('propTypeChumba'))),
+                      DropdownMenuItem(value: PropertyTypes.nyumba, child: Text(AppStrings.t('propTypeNyumba'))),
+                      DropdownMenuItem(value: PropertyTypes.kiwanja, child: Text(AppStrings.t('propTypeKiwanja'))),
                     ],
                     onChanged: (value) => setState(() => _type = value!),
                   ),
@@ -130,42 +131,42 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _mode,
-                    decoration: const InputDecoration(labelText: 'Hali'),
-                    items: const [
-                      DropdownMenuItem(value: 'rent', child: Text('Kukodisha')),
-                      DropdownMenuItem(value: 'sale', child: Text('Kuuza')),
+                    decoration: InputDecoration(labelText: AppStrings.t('modeLabel')),
+                    items: [
+                      DropdownMenuItem(value: 'rent', child: Text(AppStrings.t('modeRent'))),
+                      DropdownMenuItem(value: 'sale', child: Text(AppStrings.t('modeSale'))),
                     ],
                     onChanged: (value) => setState(() => _mode = value!),
                   ),
                 ),
               ]),
               const SizedBox(height: 12),
-              TextFormField(controller: _price, validator: _required, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Bei kwa TZS', prefixIcon: Icon(Icons.payments_outlined))),
+              TextFormField(controller: _price, validator: _required, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: AppStrings.t('priceLabelTzs'), prefixIcon: const Icon(Icons.payments_outlined))),
               const SizedBox(height: 12),
-              TextFormField(controller: _description, validator: _required, minLines: 4, maxLines: 6, decoration: const InputDecoration(labelText: 'Maelezo ya nyumba', alignLabelWithHint: true)),
+              TextFormField(controller: _description, validator: _required, minLines: 4, maxLines: 6, decoration: InputDecoration(labelText: AppStrings.t('propertyDescriptionLabel'), alignLabelWithHint: true)),
               const SizedBox(height: 10),
-              _section('Huduma zilizopo', 'Chagua zote zinazopatikana'),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wifi_rounded), title: const Text('Wi-Fi ipo'), value: _wifi, onChanged: (value) => setState(() => _wifi = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_parking_rounded), title: const Text('Sehemu ya kuegesha gari'), value: _carParking, onChanged: (value) => setState(() => _carParking = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wc_rounded), title: const Text('Choo cha ndani'), value: _indoorToilet, onChanged: (value) => setState(() => _indoorToilet = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.bolt_rounded), title: const Text('Umeme upo'), value: _hasElectricity, onChanged: (value) => setState(() => _hasElectricity = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_rounded), title: const Text('Maji ndani ya nyumba'), value: _waterInside, onChanged: (value) => setState(() => _waterInside = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_outlined), title: const Text('Maji karibu na nyumba'), value: _waterNearby, onChanged: (value) => setState(() => _waterNearby = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.chair_rounded), title: const Text('Ina samani (furnished)'), value: _furnished, onChanged: (value) => setState(() => _furnished = value)),
-              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.pool_rounded), title: const Text('Ina swimming pool'), value: _swimmingPool, onChanged: (value) => setState(() => _swimmingPool = value)),
+              _section(AppStrings.t('amenitiesSection'), AppStrings.t('amenitiesCaption')),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wifi_rounded), title: Text(AppStrings.t('wifiAvailable')), value: _wifi, onChanged: (value) => setState(() => _wifi = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_parking_rounded), title: Text(AppStrings.t('carParkingLabel')), value: _carParking, onChanged: (value) => setState(() => _carParking = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wc_rounded), title: Text(AppStrings.t('indoorToiletLabel')), value: _indoorToilet, onChanged: (value) => setState(() => _indoorToilet = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.bolt_rounded), title: Text(AppStrings.t('electricityAvailable')), value: _hasElectricity, onChanged: (value) => setState(() => _hasElectricity = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_rounded), title: Text(AppStrings.t('waterInsideLabel')), value: _waterInside, onChanged: (value) => setState(() => _waterInside = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_outlined), title: Text(AppStrings.t('waterNearbyLabel')), value: _waterNearby, onChanged: (value) => setState(() => _waterNearby = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.chair_rounded), title: Text(AppStrings.t('furnishedLabel')), value: _furnished, onChanged: (value) => setState(() => _furnished = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.pool_rounded), title: Text(AppStrings.t('swimmingPoolLabel')), value: _swimmingPool, onChanged: (value) => setState(() => _swimmingPool = value)),
               const SizedBox(height: 10),
-              _section('Eneo', 'Ruhusu GPS ya simu yako'),
+              _section(AppStrings.t('locationSection'), AppStrings.t('locationSectionCaption')),
               LocationField(value: _location, onChanged: (location) => setState(() => _location = location)),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(12)),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline_rounded),
-                    SizedBox(width: 10),
-                    Expanded(child: Text('Picha na hati ya umiliki haziwezi kubadilishwa hapa. Wasiliana na msaada ikiwa unahitaji kuzibadilisha.')),
+                    const Icon(Icons.info_outline_rounded),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(AppStrings.t('photoNotice'))),
                   ],
                 ),
               ),
@@ -173,14 +174,14 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _loading ? null : _submit,
-                child: _loading ? const CircularProgressIndicator(color: Colors.white) : const Text('Hifadhi mabadiliko'),
+                child: _loading ? const CircularProgressIndicator(color: Colors.white) : Text(AppStrings.t('saveChanges')),
               ),
             ],
           ),
         ),
       );
 
-  String? _required(String? value) => value == null || value.trim().isEmpty ? 'Sehemu hii inahitajika' : null;
+  String? _required(String? value) => value == null || value.trim().isEmpty ? AppStrings.t('requiredField') : null;
   Widget _section(String title, String caption) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Row(
