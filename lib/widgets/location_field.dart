@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../services/location_service.dart';
 import '../theme/app_theme.dart';
 
@@ -31,7 +32,7 @@ class _LocationFieldState extends State<LocationField> {
     } on LocationFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);
     } catch (_) {
-      if (mounted) setState(() => _failure = const LocationFailure('Imeshindikana kupata eneo lako. Jaribu tena.'));
+      if (mounted) setState(() => _failure = LocationFailure(AppStrings.t('locationFetchFailed')));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -53,7 +54,7 @@ class _LocationFieldState extends State<LocationField> {
           icon: _loading
               ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.my_location_rounded),
-          label: Text(_loading ? 'Inatafuta eneo...' : 'Weka eneo'),
+          label: Text(_loading ? AppStrings.t('detectingLocation') : AppStrings.t('setLocation')),
         ),
         if (value != null) ...[
           const SizedBox(height: 12),
@@ -72,7 +73,7 @@ class _LocationFieldState extends State<LocationField> {
                       Text(value.label, style: const TextStyle(fontWeight: FontWeight.w800)),
                       const SizedBox(height: 2),
                       Text(
-                        'Eneo la nyumba limewekwa',
+                        AppStrings.t('locationSetConfirmed'),
                         style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12),
                       ),
                     ],
@@ -90,7 +91,7 @@ class _LocationFieldState extends State<LocationField> {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: () => LocationService.openSettings(failure.action),
-                child: const Text('Fungua mipangilio'),
+                child: Text(AppStrings.t('openSettingsAction')),
               ),
             ),
         ],
