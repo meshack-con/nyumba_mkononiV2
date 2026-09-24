@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../theme/app_theme.dart';
 import 'role_selection_screen.dart';
 
@@ -165,7 +166,7 @@ class _SplashScreenState extends State<SplashScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
-                          child: const Text('Rudi'),
+                          child: Text(AppStrings.t('back')),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -178,7 +179,7 @@ class _SplashScreenState extends State<SplashScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
-                          child: Text(_page == _slides.length - 1 ? 'Anza' : 'Endelea'),
+                          child: Text(_page == _slides.length - 1 ? AppStrings.t('start') : AppStrings.t('continueButton')),
                         ),
                       ),
                     ],
