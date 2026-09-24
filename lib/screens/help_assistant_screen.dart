@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../services/groq_service.dart';
 import '../theme/app_theme.dart';
 
@@ -31,9 +32,7 @@ class _HelpAssistantScreenState extends State<HelpAssistantScreen> {
     super.initState();
     final welcome = _ChatMessage(
       role: 'assistant',
-      fullText: 'Habari! Mimi ni Msaidizi wa Nyumba Mkononi. '
-          'Naweza kukusaidia kuhusu kutafuta nyumba, kuweka tangazo, vichujio vya utafutaji, '
-          'malipo ya tangazo, na huduma nyingine za jukwaa hili. Una swali gani leo?',
+      fullText: AppStrings.t('helpWelcomeMessage'),
       displayedText: '',
     );
     _messages.add(welcome);
@@ -100,7 +99,7 @@ class _HelpAssistantScreenState extends State<HelpAssistantScreen> {
     } catch (_) {
       setState(() => _messages.add(_ChatMessage(
             role: 'assistant',
-            fullText: 'Samahani, kuna tatizo la mtandao. Jaribu tena baadaye.',
+            fullText: AppStrings.t('helpNetworkError'),
           )));
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -111,7 +110,7 @@ class _HelpAssistantScreenState extends State<HelpAssistantScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Msaada', style: TextStyle(fontWeight: FontWeight.w800))),
+      appBar: AppBar(title: Text(AppStrings.t('helpAppBarTitle'), style: const TextStyle(fontWeight: FontWeight.w800))),
       body: Column(
         children: [
           Expanded(
@@ -137,7 +136,7 @@ class _HelpAssistantScreenState extends State<HelpAssistantScreen> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
                       decoration: InputDecoration(
-                        hintText: 'Andika swali lako kuhusu Nyumba Mkononi...',
+                        hintText: AppStrings.t('helpInputHint'),
                         filled: true,
                         fillColor: AppTheme.sand,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -210,7 +209,7 @@ class _TypingIndicator extends StatelessWidget {
         children: [
           const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
           const SizedBox(width: 8),
-          const Text('Msaidizi anaandika...', style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+          Text(AppStrings.t('assistantTyping'), style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
         ],
       );
 }
