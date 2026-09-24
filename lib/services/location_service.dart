@@ -6,6 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
+import '../l10n/app_strings.dart';
+
 /// Eneo la nyumba: alama ya GPS pamoja na jina linaloonyeshwa.
 class PickedLocation {
   const PickedLocation({required this.point, required this.label});
@@ -34,21 +36,17 @@ class LocationService {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.denied) {
-      throw const LocationFailure(
-        'Ruhusa ya eneo imekataliwa. Bonyeza "Weka eneo" tena kisha uchague "Ruhusu".',
-      );
+      throw LocationFailure(AppStrings.t('locationPermDenied'));
     }
     if (permission == LocationPermission.deniedForever) {
       throw LocationFailure(
-        kIsWeb
-            ? 'Ruhusa ya eneo imezuiwa. Iruhusu kwenye mipangilio ya browser kisha jaribu tena.'
-            : 'Ruhusa ya eneo imezuiwa. Iruhusu kwenye mipangilio ya app kisha jaribu tena.',
+        kIsWeb ? AppStrings.t('locationPermDeniedWeb') : AppStrings.t('locationPermDeniedApp'),
         action: kIsWeb ? LocationFailureAction.none : LocationFailureAction.openAppSettings,
       );
     }
     if (!await Geolocator.isLocationServiceEnabled()) {
       throw LocationFailure(
-        'GPS ya simu imezimwa. Iwashe kisha bonyeza "Weka eneo" tena.',
+        AppStrings.t('gpsDisabled'),
         action: kIsWeb ? LocationFailureAction.none : LocationFailureAction.openLocationSettings,
       );
     }
@@ -62,11 +60,9 @@ class LocationService {
         ),
       );
     } on TimeoutException {
-      throw const LocationFailure(
-        'Imechukua muda mrefu kupata eneo. Hakikisha GPS imewashwa na uko eneo wazi, kisha jaribu tena.',
-      );
+      throw LocationFailure(AppStrings.t('locationTimeout'));
     } catch (_) {
-      throw const LocationFailure('Imeshindikana kupata eneo lako. Jaribu tena.');
+      throw LocationFailure(AppStrings.t('locationFetchFailed'));
     }
 
     final label = await _reverseGeocode(position.latitude, position.longitude) ??
