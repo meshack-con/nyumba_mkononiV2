@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/conversation.dart';
 import '../services/api_client.dart';
 import '../theme/app_theme.dart';
@@ -51,20 +52,20 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
           SliverPadding(
             padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 20, 20, 4),
             sliver: SliverToBoxAdapter(
-              child: Text('Ujumbe', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+              child: Text(AppStrings.t('messagesTitle'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
             ),
           ),
           if (_loading)
             const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
           else if (_threads.isEmpty)
-            const SliverFillRemaining(
+            SliverFillRemaining(
               hasScrollBody: false,
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 80),
+                padding: const EdgeInsets.symmetric(vertical: 80),
                 child: Column(children: [
-                  Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppTheme.muted),
-                  SizedBox(height: 12),
-                  Text('Bado hujapata ujumbe wowote.', style: TextStyle(color: AppTheme.muted)),
+                  const Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppTheme.muted),
+                  const SizedBox(height: 12),
+                  Text(AppStrings.t('noMessagesYet'), style: const TextStyle(color: AppTheme.muted)),
                 ]),
               ),
             )
