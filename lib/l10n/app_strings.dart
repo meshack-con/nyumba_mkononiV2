@@ -8,6 +8,10 @@ class AppStrings {
     return table[key] ?? _sw[key] ?? key;
   }
 
+  /// Kama [t] lakini inabadilisha `{n}` na namba uliyotoa. Muhimu kwa
+  /// maandishi yenye idadi, mfano 'Dakika {n} zilizopita'.
+  static String tCount(String key, num n) => t(key).replaceFirst('{n}', '$n');
+
   /// Majina ya miezi (Jan-Des) kulingana na lugha iliyochaguliwa.
   static List<String> get months =>
       LocaleController.instance.isEnglish ? _monthsEn : _monthsSw;
@@ -66,6 +70,23 @@ class AppStrings {
     'buyerRoleDescription': 'Tafuta nyumba, linganisha chaguo na upate eneo lako linalofuata.',
     'sellerRoleTitle': 'Muuzaji au Mpangishaji',
     'sellerRoleDescription': 'Weka mali yako mbele ya watu wanaotafuta nyumba Tanzania.',
+
+    // Messages inbox screen
+    'messagesTitle': 'Ujumbe',
+    'noMessagesYet': 'Bado hujapata ujumbe wowote.',
+
+    // Notifications screen
+    'notifLoadError': 'Imeshindikana kupakia arifa. Angalia mtandao wako.',
+    'justNow': 'Sasa hivi',
+    'minutesAgo': 'Dakika {n} zilizopita',
+    'daysAgo': 'Siku {n} zilizopita',
+    'tryAgain': 'Jaribu tena',
+    'noNotificationsYet': 'Bado huna arifa.',
+
+    // Splash screen
+    'back': 'Rudi',
+    'continueButton': 'Endelea',
+    'start': 'Anza',
   };
 
   static const Map<String, String> _en = {
@@ -112,5 +133,22 @@ class AppStrings {
     'buyerRoleDescription': 'Search homes, compare options and find your next place.',
     'sellerRoleTitle': 'Seller or Landlord',
     'sellerRoleDescription': 'Put your property in front of people looking for homes in Tanzania.',
+
+    // Messages inbox screen
+    'messagesTitle': 'Messages',
+    'noMessagesYet': 'You have not received any messages yet.',
+
+    // Notifications screen
+    'notifLoadError': 'Could not load notifications. Check your connection.',
+    'justNow': 'Just now',
+    'minutesAgo': '{n} minutes ago',
+    'daysAgo': '{n} days ago',
+    'tryAgain': 'Try again',
+    'noNotificationsYet': 'You have no notifications yet.',
+
+    // Splash screen
+    'back': 'Back',
+    'continueButton': 'Continue',
+    'start': 'Get started',
   };
 }
