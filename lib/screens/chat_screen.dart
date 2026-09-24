@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../l10n/app_strings.dart';
 import '../models/message.dart';
 import '../services/api_client.dart';
 import '../theme/app_theme.dart';
@@ -82,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _sending = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Imeshindwa kutuma ujumbe')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.t('sendFailed'))));
     }
   }
 
@@ -90,11 +91,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Futa ujumbe?'),
-        content: const Text('Ujumbe huu utafutwa kabisa kwenye mfumo.'),
+        title: Text(AppStrings.t('deleteMessageTitle')),
+        content: Text(AppStrings.t('deleteMessageBody')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Ghairi')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Futa', style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppStrings.t('cancel'))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(AppStrings.t('delete'), style: const TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -105,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() => _messages = _messages.where((m) => m.id != message.id).toList());
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Imeshindwa kufuta ujumbe')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.t('deleteMessageFailed'))));
     }
   }
 
@@ -125,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: _loading
               ? const Center(child: CircularProgressIndicator())
               : _messages.isEmpty
-                  ? const Center(child: Text('Bado hakuna ujumbe. Anza mazungumzo.', style: TextStyle(color: AppTheme.muted)))
+                  ? Center(child: Text(AppStrings.t('noChatMessagesYet'), style: const TextStyle(color: AppTheme.muted)))
                   : ListView.builder(
                       controller: _scrollController,
                       padding: const EdgeInsets.all(16),
@@ -171,7 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller: _controller,
                   minLines: 1,
                   maxLines: 4,
-                  decoration: const InputDecoration(hintText: 'Andika ujumbe...'),
+                  decoration: InputDecoration(hintText: AppStrings.t('chatInputHint')),
                 ),
               ),
               const SizedBox(width: 8),
