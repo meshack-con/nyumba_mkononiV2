@@ -12,6 +12,16 @@ class AppStrings {
   /// maandishi yenye idadi, mfano 'Dakika {n} zilizopita'.
   static String tCount(String key, num n) => t(key).replaceFirst('{n}', '$n');
 
+  /// Kama [t] lakini inabadilisha vibadala vingi vya `{jina}` kwa wakati
+  /// mmoja, mfano tParams('assistantConnectFailed', {'detail': '...'}).
+  static String tParams(String key, Map<String, String> params) {
+    var result = t(key);
+    for (final entry in params.entries) {
+      result = result.replaceFirst('{${entry.key}}', entry.value);
+    }
+    return result;
+  }
+
   /// Majina ya miezi (Jan-Des) kulingana na lugha iliyochaguliwa.
   static List<String> get months =>
       LocaleController.instance.isEnglish ? _monthsEn : _monthsSw;
@@ -142,6 +152,24 @@ class AppStrings {
     'gpsDisabled': 'GPS ya simu imezimwa. Iwashe kisha bonyeza "Weka eneo" tena.',
     'locationTimeout': 'Imechukua muda mrefu kupata eneo. Hakikisha GPS imewashwa na uko eneo wazi, kisha jaribu tena.',
     'locationFetchFailed': 'Imeshindikana kupata eneo lako. Jaribu tena.',
+
+    // Help assistant screen
+    'helpAppBarTitle': 'Msaada',
+    'helpWelcomeMessage': 'Habari! Mimi ni Msaidizi wa Nyumba Mkononi. '
+        'Naweza kukusaidia kuhusu kutafuta nyumba, kuweka tangazo, vichujio vya utafutaji, '
+        'malipo ya tangazo, na huduma nyingine za jukwaa hili. Una swali gani leo?',
+    'helpNetworkError': 'Samahani, kuna tatizo la mtandao. Jaribu tena baadaye.',
+    'helpInputHint': 'Andika swali lako kuhusu Nyumba Mkononi...',
+    'assistantTyping': 'Msaidizi anaandika...',
+    'assistantConnectFailed': 'Imeshindikana kuwasiliana na msaidizi ({detail}). Jaribu tena.',
+    'genericErrorCode': 'kosa {code}',
+
+    // Location picker screen
+    'pickLocationTitle': 'Chagua eneo la nyumba',
+    'useCurrentLocationTooltip': 'Tumia eneo langu la sasa',
+    'tapMapInstruction': 'Bonyeza mahali popote kwenye ramani kuweka eneo la nyumba',
+    'resolvingLabelText': 'Inatafuta jina la eneo...',
+    'useThisLocation': 'Tumia eneo hili',
   };
 
   static const Map<String, String> _en = {
@@ -260,5 +288,23 @@ class AppStrings {
     'gpsDisabled': 'Your phone\'s GPS is off. Turn it on, then tap "Set location" again.',
     'locationTimeout': 'Getting your location took too long. Make sure GPS is on and you\'re in an open area, then try again.',
     'locationFetchFailed': 'Could not get your location. Please try again.',
+
+    // Help assistant screen
+    'helpAppBarTitle': 'Help',
+    'helpWelcomeMessage': 'Hi! I\'m the Nyumba Mkononi assistant. '
+        'I can help with finding homes, listing a property, search filters, '
+        'listing payments, and other things on this platform. What can I help with today?',
+    'helpNetworkError': 'Sorry, there\'s a network problem. Please try again later.',
+    'helpInputHint': 'Type your question about Nyumba Mkononi...',
+    'assistantTyping': 'Assistant is typing...',
+    'assistantConnectFailed': 'Could not reach the assistant ({detail}). Please try again.',
+    'genericErrorCode': 'error {code}',
+
+    // Location picker screen
+    'pickLocationTitle': 'Pick property location',
+    'useCurrentLocationTooltip': 'Use my current location',
+    'tapMapInstruction': 'Tap anywhere on the map to set the property location',
+    'resolvingLabelText': 'Finding place name...',
+    'useThisLocation': 'Use this location',
   };
 }
