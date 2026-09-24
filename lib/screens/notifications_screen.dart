@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/notification_item.dart';
 import '../services/api_client.dart';
 import '../theme/app_theme.dart';
@@ -35,7 +36,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } on ApiException catch (error) {
       if (mounted) setState(() => _error = error.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Imeshindikana kupakia arifa. Angalia mtandao wako.');
+      if (mounted) setState(() => _error = AppStrings.t('notifLoadError'));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -45,10 +46,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final local = dt.toLocal();
     final now = DateTime.now();
     final diff = now.difference(local);
-    if (diff.inMinutes < 1) return 'Sasa hivi';
-    if (diff.inMinutes < 60) return 'Dakika ${diff.inMinutes} zilizopita';
+    if (diff.inMinutes < 1) return AppStrings.t('justNow');
+    if (diff.inMinutes < 60) return AppStrings.tCount('minutesAgo', diff.inMinutes);
     if (diff.inHours < 24 && local.day == now.day) return '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
-    if (diff.inDays < 7) return 'Siku ${diff.inDays} zilizopita';
+    if (diff.inDays < 7) return AppStrings.tCount('daysAgo', diff.inDays);
     return '${local.day}/${local.month}/${local.year}';
   }
 
@@ -88,7 +89,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Arifa')),
+      appBar: AppBar(title: Text(AppStrings.t('notifications'))),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -102,7 +103,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: Column(children: [
                           Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.muted)),
                           const SizedBox(height: 16),
-                          FilledButton(onPressed: _load, child: const Text('Jaribu tena')),
+                          FilledButton(onPressed: _load, child: Text(AppStrings.t('tryAgain'))),
                         ]),
                       ),
                     ],
@@ -110,13 +111,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 : _items.isEmpty
                     ? ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        children: const [
+                        children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 100),
+                            padding: const EdgeInsets.symmetric(vertical: 100),
                             child: Column(children: [
-                              Icon(Icons.notifications_none_rounded, size: 48, color: AppTheme.muted),
-                              SizedBox(height: 12),
-                              Text('Bado huna arifa.', style: TextStyle(color: AppTheme.muted)),
+                              const Icon(Icons.notifications_none_rounded, size: 48, color: AppTheme.muted),
+                              const SizedBox(height: 12),
+                              Text(AppStrings.t('noNotificationsYet'), style: const TextStyle(color: AppTheme.muted)),
                             ]),
                           ),
                         ],
