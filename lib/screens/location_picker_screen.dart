@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
+import '../l10n/app_strings.dart';
 import '../services/location_service.dart';
 import '../theme/app_theme.dart';
 
@@ -112,7 +113,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       if (!mounted) return;
       setState(() => _detectingGps = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Imeshindwa kupata eneo lako. Jaribu tena.')),
+        SnackBar(content: Text(AppStrings.t('locationFetchFailed'))),
       );
     }
   }
@@ -126,10 +127,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chagua eneo la nyumba', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(AppStrings.t('pickLocationTitle'), style: const TextStyle(fontWeight: FontWeight.w800)),
         actions: [
           IconButton(
-            tooltip: 'Tumia eneo langu la sasa',
+            tooltip: AppStrings.t('useCurrentLocationTooltip'),
             onPressed: _detectingGps ? null : _useCurrentLocation,
             icon: _detectingGps
                 ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
@@ -173,7 +174,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 2))],
               ),
               child: Text(
-                'Bonyeza mahali popote kwenye ramani kuweka eneo la nyumba',
+                AppStrings.t('tapMapInstruction'),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
               ),
@@ -199,7 +200,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _resolvingLabel
-                          ? const Text('Inatafuta jina la eneo...')
+                          ? Text(AppStrings.t('resolvingLabelText'))
                           : Text(
                               _label ?? '${_point.latitude.toStringAsFixed(5)}, ${_point.longitude.toStringAsFixed(5)}',
                               style: const TextStyle(fontWeight: FontWeight.w700),
@@ -210,7 +211,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   ElevatedButton.icon(
                     onPressed: _resolvingLabel ? null : _confirm,
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('Tumia eneo hili'),
+                    label: Text(AppStrings.t('useThisLocation')),
                   ),
                 ],
               ),
