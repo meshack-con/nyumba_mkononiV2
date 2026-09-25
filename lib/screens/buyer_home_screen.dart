@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/property.dart';
 import '../models/user.dart';
 import '../services/api_client.dart';
@@ -293,14 +294,14 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         fontSize: 11,
       ),
       destinations: [
-        const NavigationRailDestination(
-          icon: Icon(Icons.search_rounded),
-          label: Text('Tafuta'),
+        NavigationRailDestination(
+          icon: const Icon(Icons.search_rounded),
+          label: Text(AppStrings.t('navSearchLabel')),
         ),
-        const NavigationRailDestination(
-          icon: Icon(Icons.favorite_border_rounded),
-          selectedIcon: Icon(Icons.favorite_rounded),
-          label: Text('Pendwa'),
+        NavigationRailDestination(
+          icon: const Icon(Icons.favorite_border_rounded),
+          selectedIcon: const Icon(Icons.favorite_rounded),
+          label: Text(AppStrings.t('navFavoritesLabel')),
         ),
         NavigationRailDestination(
           icon: _unreadMessages > 0
@@ -309,17 +310,17 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           selectedIcon: _unreadMessages > 0
               ? Badge(label: Text('$_unreadMessages'), backgroundColor: _pink, child: const Icon(Icons.chat_bubble_rounded))
               : const Icon(Icons.chat_bubble_rounded),
-          label: const Text('Ujumbe'),
+          label: Text(AppStrings.t('navMessagesLabel')),
         ),
-        const NavigationRailDestination(
-          icon: Icon(Icons.support_agent_outlined),
-          selectedIcon: Icon(Icons.support_agent_rounded),
-          label: Text('Msaada'),
+        NavigationRailDestination(
+          icon: const Icon(Icons.support_agent_outlined),
+          selectedIcon: const Icon(Icons.support_agent_rounded),
+          label: Text(AppStrings.t('navHelpLabel')),
         ),
-        const NavigationRailDestination(
-          icon: Icon(Icons.person_outline_rounded),
-          selectedIcon: Icon(Icons.person_rounded),
-          label: Text('Wasifu'),
+        NavigationRailDestination(
+          icon: const Icon(Icons.person_outline_rounded),
+          selectedIcon: const Icon(Icons.person_rounded),
+          label: Text(AppStrings.t('navProfileLabel')),
         ),
       ],
     );
@@ -346,32 +347,32 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
               _bottomItem(
                 index: 0,
                 icon: Icons.search_rounded,
-                label: 'Tafuta',
+                label: AppStrings.t('navSearchLabel'),
               ),
               _bottomItem(
                 index: 1,
                 icon: Icons.favorite_border_rounded,
                 activeIcon: Icons.favorite_rounded,
-                label: 'Zilizohifadhiwa',
+                label: AppStrings.t('bottomFavoritesLabel'),
               ),
               _bottomItem(
                 index: 2,
                 icon: Icons.chat_bubble_outline_rounded,
                 activeIcon: Icons.chat_bubble_rounded,
-                label: 'Ujumbe',
+                label: AppStrings.t('navMessagesLabel'),
                 badgeCount: _unreadMessages,
               ),
               _bottomItem(
                 index: 3,
                 icon: Icons.support_agent_outlined,
                 activeIcon: Icons.support_agent_rounded,
-                label: 'Msaada',
+                label: AppStrings.t('navHelpLabel'),
               ),
               _bottomItem(
                 index: 4,
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,
-                label: 'Wasifu',
+                label: AppStrings.t('navProfileLabel'),
               ),
             ],
           ),
@@ -565,11 +566,11 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Tafuta nyumba, viwanja na fursa bora za makazi',
+        Text(
+          AppStrings.t('heroHeadline'),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: const TextStyle(
             color: _navy,
             fontSize: 22,
             fontWeight: FontWeight.w900,
@@ -578,9 +579,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           ),
         ),
         const SizedBox(height: 5),
-        const Text(
-          'Nyumba Mkononi – Mahali sahihi kwa mahitaji yako ya makazi',
-          style: TextStyle(
+        Text(
+          AppStrings.t('heroTagline'),
+          style: const TextStyle(
             color: _muted,
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -601,9 +602,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           ],
         ),
         const SizedBox(height: 13),
-        const Text(
-          'Tafuta nyumba, viwanja na fursa bora za makazi',
-          style: TextStyle(
+        Text(
+          AppStrings.t('heroHeadline'),
+          style: const TextStyle(
             color: _navy,
             fontSize: 19,
             fontWeight: FontWeight.w900,
@@ -611,11 +612,11 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
-          'Nyumba Mkononi – Mahali sahihi kwa mahitaji yako ya makazi',
+        Text(
+          AppStrings.t('heroTagline'),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: const TextStyle(
             color: _muted,
             fontSize: 11,
             fontWeight: FontWeight.w500,
@@ -653,9 +654,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Karibu,',
-              style: TextStyle(
+            Text(
+              AppStrings.t('welcomeComma'),
+              style: const TextStyle(
                 color: _navy,
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -664,7 +665,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
             ),
             const SizedBox(height: 3),
             Text(
-              _currentUser?.fullName ?? 'Mgeni',
+              _currentUser?.fullName ?? AppStrings.t('guest'),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -713,9 +714,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         Icons.person_outline_rounded,
         size: 17,
       ),
-      label: const Text(
-        'Ingia',
-        style: TextStyle(
+      label: Text(
+        AppStrings.t('signIn'),
+        style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w800,
         ),
@@ -772,7 +773,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
-                hintText: 'Dar es Salaam, Kariakoo...',
+                hintText: AppStrings.t('searchHint'),
                 hintStyle: const TextStyle(
                   color: _muted,
                   fontSize: 12,
@@ -786,7 +787,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                   padding: const EdgeInsets.all(5),
                   child: IconButton(
                     onPressed: _showFilters,
-                    tooltip: 'Vichujio',
+                    tooltip: AppStrings.t('filtersTooltip'),
                     style: IconButton.styleFrom(
                       backgroundColor: _pink.withOpacity(.08),
                       foregroundColor: _pink,
@@ -833,14 +834,14 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
             children: [
               Expanded(
                 child: _modeButton(
-                  'Kwa Kupanga',
+                  AppStrings.t('rentModeButtonLabel'),
                   'rent',
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _modeButton(
-                  'Kwa Kununua',
+                  AppStrings.t('buyModeButtonLabel'),
                   'sale',
                 ),
               ),
@@ -937,10 +938,10 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
 
   Widget _categoryBar() {
     final categories = <String, String>{
-      'Zote': '',
-      'Chumba': 'chumba',
-      'Nyumba': 'nyumba',
-      'Kiwanja': 'kiwanja',
+      AppStrings.t('allCategoriesLabel'): '',
+      AppStrings.t('propTypeChumba'): 'chumba',
+      AppStrings.t('propTypeNyumba'): 'nyumba',
+      AppStrings.t('propTypeKiwanja'): 'kiwanja',
     };
 
     return SizedBox(
@@ -1019,25 +1020,25 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                     color: Colors.white,
                     size: 15,
                   )
-                else if (entry.key == 'Chumba')
+                else if (entry.value == 'chumba')
                   const Icon(
                     Icons.bed_rounded,
                     color: _navy,
                     size: 15,
                   )
-                else if (entry.key == 'Nyumba')
+                else if (entry.value == 'nyumba')
                   const Icon(
                     Icons.home_rounded,
                     color: _navy,
                     size: 15,
                   )
-                else if (entry.key == 'Kiwanja')
+                else if (entry.value == 'kiwanja')
                   const Icon(
                     Icons.landscape_rounded,
                     color: _navy,
                     size: 15,
                   ),
-                if (entry.key != 'Zote')
+                if (entry.value.isNotEmpty)
                   const SizedBox(width: 5),
                 Text(
                   entry.key,
@@ -1080,10 +1081,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
     }
 
     if (_properties.isEmpty) {
-      return const _EmptyState(
+      return _EmptyState(
         icon: Icons.search_off_rounded,
-        message:
-            'Hakuna matangazo yanayolingana na utafutaji wako.',
+        message: AppStrings.t('noMatchingListings'),
       );
     }
 
@@ -1131,9 +1131,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                     ),
                   ),
                   const SizedBox(width: 9),
-                  const Text(
-                    'Mali zilizothibitishwa',
-                    style: TextStyle(
+                  Text(
+                    AppStrings.t('verifiedPropertiesTitle'),
+                    style: const TextStyle(
                       color: _navy,
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -1152,7 +1152,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                           BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '${_properties.length} nyumba',
+                      AppStrings.tCount('propertiesCount', _properties.length),
                       style: TextStyle(
                         color: _pink,
                         fontSize: 11,
