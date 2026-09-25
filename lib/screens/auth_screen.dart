@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../services/api_client.dart';
 import '../services/location_service.dart';
 import '../theme/app_theme.dart';
@@ -38,11 +39,6 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _error;
 
   // --- Eneo: kutafuta kiotomatiki kwa GPS (badala ya kuandika) ----------
-  static const _locationProgressMessages = [
-    'Inaendelea...',
-    'Inachakata eneo lako...',
-    'Bado kidogo...',
-  ];
   Timer? _locationTimer;
   int _locationMsgIndex = 0;
   bool _detectingLocation = false;
@@ -72,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _locationTimer?.cancel();
     _locationTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
       if (!mounted) return;
-      setState(() => _locationMsgIndex = (_locationMsgIndex + 1) % _locationProgressMessages.length);
+      setState(() => _locationMsgIndex = (_locationMsgIndex + 1) % AppStrings.locationProgressMessages.length);
     });
     try {
       final result = await LocationService.detectCurrent();
@@ -89,7 +85,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } catch (_) {
       _locationTimer?.cancel();
       if (!mounted) return;
-      setState(() { _detectingLocation = false; _locationError = 'Imeshindikana kupata eneo lako. Jaribu tena.'; });
+      setState(() { _detectingLocation = false; _locationError = AppStrings.t('locationFetchFailed'); });
     }
   }
 
@@ -106,7 +102,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Imeshindikana kuwasiliana na server.');
+      setState(() => _error = AppStrings.t('serverConnectFailed'));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -143,7 +139,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 20),
                       Center(
                         child: Text(
-                          _registering ? 'Fungua akaunti' : 'Karibu tena',
+                          _registering ? AppStrings.t('registerTitle') : AppStrings.t('loginTitle'),
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -155,8 +151,8 @@ class _AuthScreenState extends State<AuthScreen> {
                       Center(
                         child: Text(
                           _registering
-                              ? 'Taarifa zako zitatusaidia kukupa uzoefu bora.'
-                              : 'Ingia ili uendelee na hatua yako.',
+                              ? AppStrings.t('registerSubtitle')
+                              : AppStrings.t('loginSubtitle'),
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -167,9 +163,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 24),
                       Center(
                         child: SegmentedButton<bool>(
-                          segments: const [
-                            ButtonSegment(value: false, label: Text('Ingia')),
-                            ButtonSegment(value: true, label: Text('Jisajili')),
+                          segments: [
+                            ButtonSegment(value: false, label: Text(AppStrings.t('loginTab'))),
+                            ButtonSegment(value: true, label: Text(AppStrings.t('registerTab'))),
                           ],
                           selected: {_registering},
                           onSelectionChanged: (value) =>
@@ -178,16 +174,16 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       const SizedBox(height: 22),
                       if (_registering) ...[
-                        _field(_fullName, 'Jina kamili', Icons.badge_outlined),
+                        _field(_fullName, AppStrings.t('fullNameLabel'), Icons.badge_outlined),
                         const SizedBox(height: 12),
-                        _field(_phone, 'Namba ya simu', Icons.phone_outlined, keyboard: TextInputType.phone),
+                        _field(_phone, AppStrings.t('phoneLabel'), Icons.phone_outlined, keyboard: TextInputType.phone),
                         const SizedBox(height: 12),
                       ],
-                      _field(_username, 'Username', Icons.alternate_email_rounded),
+                      _field(_username, AppStrings.t('usernameLabel'), Icons.alternate_email_rounded),
                       const SizedBox(height: 12),
                       _passwordField(
                         _password,
-                        'Password',
+                        AppStrings.t('passwordFieldLabel'),
                         _obscurePassword,
                         () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
@@ -195,27 +191,27 @@ class _AuthScreenState extends State<AuthScreen> {
                         const SizedBox(height: 12),
                         _passwordField(
                           _confirmPassword,
-                          'Thibitisha password',
+                          AppStrings.t('confirmPasswordLabel'),
                           _obscureConfirmPassword,
                           () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                           validator: (value) {
-                            if (value == null || value.trim().isEmpty) return 'Thibitisha password yako';
-                            if (value != _password.text) return 'Password hazifanani';
+                            if (value == null || value.trim().isEmpty) return AppStrings.t('confirmPasswordRequired');
+                            if (value != _password.text) return AppStrings.t('passwordMismatch');
                             return null;
                           },
                         ),
                       ],
                       if (_registering && _seller) ...[
                         const SizedBox(height: 12),
-                        _field(_email, 'Barua pepe', Icons.mail_outline_rounded, keyboard: TextInputType.emailAddress),
+                        _field(_email, AppStrings.t('emailLabel'), Icons.mail_outline_rounded, keyboard: TextInputType.emailAddress),
                         const SizedBox(height: 12),
                         _areaField(),
                       ],
                       if (_registering && widget.lockRole == null) ...[
                         const SizedBox(height: 18),
-                        Text('Jukumu lako', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
+                        Text(AppStrings.t('yourRoleLabel'), style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<bool>(initialValue: _seller, decoration: const InputDecoration(prefixIcon: Icon(Icons.people_outline)), items: const [DropdownMenuItem(value: false, child: Text('Mpangaji au Mnunuzi')), DropdownMenuItem(value: true, child: Text('Muuzaji au Mpangishaji'))], onChanged: (value) => setState(() => _seller = value ?? false)),
+                        DropdownButtonFormField<bool>(initialValue: _seller, decoration: const InputDecoration(prefixIcon: Icon(Icons.people_outline)), items: [DropdownMenuItem(value: false, child: Text(AppStrings.t('buyerRoleTitle'))), DropdownMenuItem(value: true, child: Text(AppStrings.t('sellerRoleTitle')))], onChanged: (value) => setState(() => _seller = value ?? false)),
                       ],
                       if (_error != null) Padding(padding: const EdgeInsets.only(top: 16), child: Text(_error!, style: const TextStyle(color: Colors.red))),
                       const SizedBox(height: 24),
@@ -233,7 +229,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : Text(_registering ? 'Jisajili' : 'Ingia'),
+                                : Text(_registering ? AppStrings.t('registerTab') : AppStrings.t('loginTab')),
                           ),
                         ),
                       ),
@@ -248,7 +244,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label, IconData icon, {bool obscure = false, TextInputType? keyboard}) => TextFormField(controller: controller, obscureText: obscure, keyboardType: keyboard, validator: (value) => value == null || value.trim().isEmpty ? 'Jaza $label' : null, decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)));
+  Widget _field(TextEditingController controller, String label, IconData icon, {bool obscure = false, TextInputType? keyboard}) => TextFormField(controller: controller, obscureText: obscure, keyboardType: keyboard, validator: (value) => value == null || value.trim().isEmpty ? AppStrings.tParams('fillField', {'label': label}) : null, decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)));
 
   /// Sehemu ya password - ina kiicon cha jicho ambacho mtumiaji anaweza
   /// kugusa ili kuonyesha/kuficha password aliyoingiza.
@@ -262,7 +258,7 @@ class _AuthScreenState extends State<AuthScreen> {
       TextFormField(
         controller: controller,
         obscureText: obscure,
-        validator: validator ?? (value) => value == null || value.trim().isEmpty ? 'Jaza $label' : null,
+        validator: validator ?? (value) => value == null || value.trim().isEmpty ? AppStrings.tParams('fillField', {'label': label}) : null,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -282,11 +278,11 @@ class _AuthScreenState extends State<AuthScreen> {
           TextFormField(
             controller: _area,
             readOnly: true,
-            validator: (value) => value == null || value.trim().isEmpty ? 'Bonyeza "Weka eneo" kupata eneo lako' : null,
-            decoration: const InputDecoration(
-              labelText: 'Eneo',
-              hintText: 'Bonyeza kitufe hapa chini kupata eneo lako',
-              prefixIcon: Icon(Icons.location_on_outlined),
+            validator: (value) => value == null || value.trim().isEmpty ? AppStrings.t('areaRequiredMsg') : null,
+            decoration: InputDecoration(
+              labelText: AppStrings.t('locationSection'),
+              hintText: AppStrings.t('areaFieldHint'),
+              prefixIcon: const Icon(Icons.location_on_outlined),
             ),
           ),
           const SizedBox(height: 10),
@@ -295,12 +291,12 @@ class _AuthScreenState extends State<AuthScreen> {
             icon: _detectingLocation
                 ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                 : const Icon(Icons.my_location_rounded),
-            label: Text(_area.text.isEmpty ? 'Weka eneo' : 'Tafuta eneo tena'),
+            label: Text(_area.text.isEmpty ? AppStrings.t('setLocation') : AppStrings.t('detectLocationAgain')),
           ),
           if (_detectingLocation) ...[
             const SizedBox(height: 8),
             Text(
-              _locationProgressMessages[_locationMsgIndex],
+              AppStrings.locationProgressMessages[_locationMsgIndex],
               style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic, fontSize: 12),
             ),
           ],
