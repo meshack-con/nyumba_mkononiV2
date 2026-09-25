@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
+import '../l10n/app_strings.dart';
 import '../models/property.dart';
 import '../models/property_contact.dart';
 import '../models/property_type.dart';
@@ -55,7 +56,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _contactError = 'Imeshindwa kupata taarifa za mmiliki';
+        _contactError = AppStrings.t('contactLoadFailed');
         _loadingContact = false;
       });
     }
@@ -102,7 +103,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
       final allowed = await _ensureLocationPermission();
       if (!allowed) {
         setState(() {
-          _mapError = 'Ruhusa ya eneo (GPS) haikuruhusiwa. Iwashe kwenye mipangilio ya simu.';
+          _mapError = AppStrings.t('locationPermNotAllowed');
           _loadingMap = false;
         });
         return;
@@ -146,7 +147,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _mapError = 'Imeshindwa kupata eneo lako. Hakikisha GPS iko wazi.';
+        _mapError = AppStrings.t('distanceFetchFailed');
         _loadingMap = false;
       });
     }
@@ -159,7 +160,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
     final isWide = width >= 850;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Maelezo ya nyumba', style: TextStyle(fontWeight: FontWeight.w800))),
+      appBar: AppBar(title: Text(AppStrings.t('propertyDetailsTitle'), style: const TextStyle(fontWeight: FontWeight.w800))),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 960),
@@ -199,14 +200,14 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
             ]),
             const SizedBox(height: 18),
             Text(property.formattedPrice, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.coral, fontWeight: FontWeight.w900)),
-            Text(property.mode == 'rent' ? 'Kwa kukodisha' : 'Kwa kuuza', style: const TextStyle(color: AppTheme.muted)),
+            Text(property.mode == 'rent' ? AppStrings.t('forRent') : AppStrings.t('forSale'), style: const TextStyle(color: AppTheme.muted)),
             const SizedBox(height: 22),
             Wrap(spacing: 8, runSpacing: 8, children: [
               Chip(label: Text(PropertyTypes.label(property.type))),
-              Chip(label: Text(property.hasWifi ? 'Wi-Fi ipo' : 'Hakuna Wi-Fi'), avatar: Icon(property.hasWifi ? Icons.wifi : Icons.wifi_off, size: 17)),
+              Chip(label: Text(property.hasWifi ? AppStrings.t('wifiAvailable') : AppStrings.t('noWifi')), avatar: Icon(property.hasWifi ? Icons.wifi : Icons.wifi_off, size: 17)),
             ]),
             const SizedBox(height: 22),
-            Text('Kuhusu nyumba hii', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+            Text(AppStrings.t('aboutThisHome'), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
             const SizedBox(height: 8),
             Text(property.description, style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5, color: AppTheme.muted)),
             const SizedBox(height: 26),
@@ -217,7 +218,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
               icon: _loadingMap
                   ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                   : Icon(_showMap ? Icons.expand_less_rounded : Icons.map_outlined),
-              label: Text(_showMap ? 'Ficha eneo' : 'Angalia eneo la nyumba'),
+              label: Text(_showMap ? AppStrings.t('hideLocation') : AppStrings.t('viewPropertyLocation')),
             ),
             if (_mapError != null)
               Padding(padding: const EdgeInsets.only(top: 8), child: Text(_mapError!, style: const TextStyle(color: Colors.red))),
@@ -230,7 +231,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                   child: Row(children: [
                     const Icon(Icons.social_distance_rounded, size: 20),
                     const SizedBox(width: 8),
-                    Text('Umbali kutoka ulipo: ${_distanceKm!.toStringAsFixed(1)} km', style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(AppStrings.tParams('distanceFromYou', {'km': _distanceKm!.toStringAsFixed(1)}), style: const TextStyle(fontWeight: FontWeight.w800)),
                   ]),
                 ),
               const SizedBox(height: 12),
@@ -259,7 +260,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
             const SizedBox(height: 26),
 
             // --- Mmiliki na mawasiliano ---
-            Text('Mmiliki wa nyumba', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+            Text(AppStrings.t('propertyOwner'), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
             const SizedBox(height: 10),
             if (_contactError != null) Text(_contactError!, style: const TextStyle(color: Colors.red)),
             if (!_showContact)
@@ -268,7 +269,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                 icon: _loadingContact
                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.person_outline_rounded),
-                label: const Text('Ona jina na mawasiliano ya mmiliki'),
+                label: Text(AppStrings.t('viewOwnerContact')),
               )
             else if (_contact != null)
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -292,7 +293,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                   ]),
                 ],
                 const SizedBox(height: 16),
-                ElevatedButton.icon(onPressed: _openChat, icon: const Icon(Icons.chat_bubble_outline_rounded), label: const Text('Tuma ujumbe')),
+                ElevatedButton.icon(onPressed: _openChat, icon: const Icon(Icons.chat_bubble_outline_rounded), label: Text(AppStrings.t('sendMessage'))),
               ]),
           ]),
         ),
