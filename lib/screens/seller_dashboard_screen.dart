@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/property.dart';
 import '../models/user.dart';
 import '../services/api_client.dart';
@@ -95,11 +96,11 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Futa tangazo?'),
-        content: Text('Una uhakika unataka kufuta "${property.name}"? Hatua hii haiwezi kutenduliwa.'),
+        title: Text(AppStrings.t('deleteListingTitle')),
+        content: Text(AppStrings.tParams('deleteListingBody', {'name': property.name})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Ghairi')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Futa', style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppStrings.t('cancel'))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(AppStrings.t('delete'), style: const TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -107,13 +108,13 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     try {
       await ApiClient.instance.deleteProperty(property.id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tangazo limefutwa.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.t('listingDeleted'))));
         _load();
       }
     } on ApiException catch (error) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Imeshindikana kufuta tangazo.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.t('listingDeleteFailed'))));
     }
   }
 
@@ -168,7 +169,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
       // pekee cha kuweka nyumba ni kile cha katikati ndani ya "empty state"
       // (_emptyState) - kamwe visionekane vyote viwili kwa wakati mmoja.
       floatingActionButton: _tab == 0 && !_loading && _properties.isNotEmpty
-          ? FloatingActionButton.extended(onPressed: _addProperty, backgroundColor: AppTheme.coral, foregroundColor: Colors.white, icon: const Icon(Icons.add_rounded), label: const Text('Weka nyumba'))
+          ? FloatingActionButton.extended(onPressed: _addProperty, backgroundColor: AppTheme.coral, foregroundColor: Colors.white, icon: const Icon(Icons.add_rounded), label: Text(AppStrings.t('addPropertyLabel')))
           : null,
       // Sehemu ya "Ujumbe" iko kwenye button bar chini (siyo juu kabisa) ili
       // ionekane kirahisi, na inaonyesha idadi ya notification (ujumbe
@@ -177,11 +178,11 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
         selectedIndex: _tab,
         onDestinationSelected: _selectTab,
         destinations: [
-          const NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard_rounded), label: 'Dashibodi'),
+          NavigationDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard_rounded), label: AppStrings.t('dashboardTab')),
           NavigationDestination(
             icon: totalUnread > 0 ? Badge(label: Text('$totalUnread'), backgroundColor: AppTheme.coral, child: chatIcon) : chatIcon,
             selectedIcon: totalUnread > 0 ? Badge(label: Text('$totalUnread'), backgroundColor: AppTheme.coral, child: chatIconSelected) : chatIconSelected,
-            label: 'Ujumbe',
+            label: AppStrings.t('messagesTitle'),
           ),
         ],
       ),
@@ -207,7 +208,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Mali zako', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+              Text(AppStrings.t('yourPropertiesLabel'), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
               if (_properties.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -249,22 +250,22 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _currentUser != null ? 'Karibu, ${_currentUser!.fullName.split(' ').first}' : 'Karibu tena',
+              _currentUser != null ? AppStrings.tParams('welcomeName', {'name': _currentUser!.fullName.split(' ').first}) : AppStrings.t('loginTitle'),
               style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text(
-              'Fuatilia matangazo yako ya nyumba hapa.',
+              AppStrings.t('trackListingsSubtitle'),
               style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 12.5),
             ),
             const SizedBox(height: 22),
             Row(
               children: [
-                _StatChip(icon: Icons.home_work_rounded, value: '${_properties.length}', label: 'Jumla'),
+                _StatChip(icon: Icons.home_work_rounded, value: '${_properties.length}', label: AppStrings.t('totalLabel')),
                 const SizedBox(width: 10),
-                _StatChip(icon: Icons.verified_rounded, value: '$approved', label: 'Imeidhinishwa'),
+                _StatChip(icon: Icons.verified_rounded, value: '$approved', label: AppStrings.t('approvedLabel')),
                 const SizedBox(width: 10),
-                _StatChip(icon: Icons.hourglass_top_rounded, value: '$pending', label: 'Inapitiwa'),
+                _StatChip(icon: Icons.hourglass_top_rounded, value: '$pending', label: AppStrings.t('pendingLabel')),
               ],
             ),
           ],
@@ -290,18 +291,18 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
               child: const Icon(Icons.add_home_work_outlined, size: 34, color: AppTheme.muted),
             ),
             const SizedBox(height: 16),
-            const Text('Bado hujaweka nyumba', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+            Text(AppStrings.t('noListingsYetTitle'), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
             const SizedBox(height: 6),
-            const Text(
-              'Anza kwa kuongeza tangazo la kwanza la nyumba yako.',
+            Text(
+              AppStrings.t('noListingsYetSubtitle'),
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppTheme.muted, fontSize: 12.5),
+              style: const TextStyle(color: AppTheme.muted, fontSize: 12.5),
             ),
             const SizedBox(height: 18),
             FilledButton.icon(
               onPressed: _addProperty,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Weka nyumba'),
+              label: Text(AppStrings.t('addPropertyLabel')),
             ),
           ],
         ),
@@ -353,9 +354,9 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                           if (value == 'edit') _editProperty(property);
                           if (value == 'delete') _deleteProperty(property);
                         },
-                        itemBuilder: (_) => const [
-                          PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit_outlined, size: 18), SizedBox(width: 8), Text('Hariri')])),
-                          PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete_outline_rounded, size: 18, color: Colors.red), SizedBox(width: 8), Text('Futa', style: TextStyle(color: Colors.red))])),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(value: 'edit', child: Row(children: [const Icon(Icons.edit_outlined, size: 18), const SizedBox(width: 8), Text(AppStrings.t('edit'))])),
+                          PopupMenuItem(value: 'delete', child: Row(children: [const Icon(Icons.delete_outline_rounded, size: 18, color: Colors.red), const SizedBox(width: 8), Text(AppStrings.t('delete'), style: const TextStyle(color: Colors.red))])),
                         ],
                       ),
                     ],
@@ -451,5 +452,5 @@ class _MiniStat extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status}); final String status;
   @override
-  Widget build(BuildContext context) { final approved = status == 'approved'; final expired = status == 'expired'; final color = approved ? AppTheme.success : expired ? AppTheme.muted : AppTheme.primary; final label = approved ? 'Imeidhinishwa' : expired ? 'Imeisha' : 'Inapitiwa'; return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: color.withAlpha(31), borderRadius: BorderRadius.circular(8)), child: Text(label, style: TextStyle(color: color, fontSize: 10.5, fontWeight: FontWeight.w800))); }
+  Widget build(BuildContext context) { final approved = status == 'approved'; final expired = status == 'expired'; final color = approved ? AppTheme.success : expired ? AppTheme.muted : AppTheme.primary; final label = approved ? AppStrings.t('approvedLabel') : expired ? AppStrings.t('expiredLabel') : AppStrings.t('pendingLabel'); return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: color.withAlpha(31), borderRadius: BorderRadius.circular(8)), child: Text(label, style: TextStyle(color: color, fontSize: 10.5, fontWeight: FontWeight.w800))); }
 }
