@@ -26,6 +26,18 @@ class AppStrings {
   static List<String> get months =>
       LocaleController.instance.isEnglish ? _monthsEn : _monthsSw;
 
+  /// Ujumbe wa maendeleo wakati wa kutafuta eneo (auth screen).
+  static List<String> get locationProgressMessages =>
+      LocaleController.instance.isEnglish ? _locationProgressEn : _locationProgressSw;
+
+  static const List<String> _locationProgressSw = [
+    'Inaendelea...', 'Inachakata eneo lako...', 'Bado kidogo...',
+  ];
+
+  static const List<String> _locationProgressEn = [
+    'Working on it...', 'Processing your location...', 'Almost there...',
+  ];
+
   static const List<String> _monthsSw = [
     'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni',
     'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba',
@@ -207,6 +219,41 @@ class AppStrings {
     'propertyOwner': 'Mmiliki wa nyumba',
     'viewOwnerContact': 'Ona jina na mawasiliano ya mmiliki',
     'sendMessage': 'Tuma ujumbe',
+
+    // Auth screen
+    'serverConnectFailed': 'Imeshindikana kuwasiliana na server.',
+    'registerTitle': 'Fungua akaunti',
+    'loginTitle': 'Karibu tena',
+    'registerSubtitle': 'Taarifa zako zitatusaidia kukupa uzoefu bora.',
+    'loginSubtitle': 'Ingia ili uendelee na hatua yako.',
+    'loginTab': 'Ingia',
+    'registerTab': 'Jisajili',
+    'passwordFieldLabel': 'Password',
+    'confirmPasswordLabel': 'Thibitisha password',
+    'confirmPasswordRequired': 'Thibitisha password yako',
+    'passwordMismatch': 'Password hazifanani',
+    'yourRoleLabel': 'Jukumu lako',
+    'fillField': 'Jaza {label}',
+    'areaFieldHint': 'Bonyeza kitufe hapa chini kupata eneo lako',
+    'areaRequiredMsg': 'Bonyeza "Weka eneo" kupata eneo lako',
+    'detectLocationAgain': 'Tafuta eneo tena',
+
+    // Seller dashboard screen
+    'deleteListingTitle': 'Futa tangazo?',
+    'deleteListingBody': 'Una uhakika unataka kufuta "{name}"? Hatua hii haiwezi kutenduliwa.',
+    'listingDeleted': 'Tangazo limefutwa.',
+    'listingDeleteFailed': 'Imeshindikana kufuta tangazo.',
+    'dashboardTab': 'Dashibodi',
+    'addPropertyLabel': 'Weka nyumba',
+    'yourPropertiesLabel': 'Mali zako',
+    'welcomeName': 'Karibu, {name}',
+    'trackListingsSubtitle': 'Fuatilia matangazo yako ya nyumba hapa.',
+    'totalLabel': 'Jumla',
+    'approvedLabel': 'Imeidhinishwa',
+    'pendingLabel': 'Inapitiwa',
+    'expiredLabel': 'Imeisha',
+    'noListingsYetTitle': 'Bado hujaweka nyumba',
+    'noListingsYetSubtitle': 'Anza kwa kuongeza tangazo la kwanza la nyumba yako.',
   };
 
   static const Map<String, String> _en = {
@@ -380,5 +427,40 @@ class AppStrings {
     'propertyOwner': 'Property owner',
     'viewOwnerContact': 'View owner\'s name and contact',
     'sendMessage': 'Send message',
+
+    // Auth screen
+    'serverConnectFailed': 'Could not reach the server.',
+    'registerTitle': 'Create account',
+    'loginTitle': 'Welcome back',
+    'registerSubtitle': 'Your details help us give you a better experience.',
+    'loginSubtitle': 'Sign in to continue.',
+    'loginTab': 'Sign in',
+    'registerTab': 'Sign up',
+    'passwordFieldLabel': 'Password',
+    'confirmPasswordLabel': 'Confirm password',
+    'confirmPasswordRequired': 'Please confirm your password',
+    'passwordMismatch': 'Passwords do not match',
+    'yourRoleLabel': 'Your role',
+    'fillField': 'Please enter {label}',
+    'areaFieldHint': 'Tap the button below to get your location',
+    'areaRequiredMsg': 'Tap "Set location" to get your location',
+    'detectLocationAgain': 'Detect location again',
+
+    // Seller dashboard screen
+    'deleteListingTitle': 'Delete listing?',
+    'deleteListingBody': 'Are you sure you want to delete "{name}"? This cannot be undone.',
+    'listingDeleted': 'Listing deleted.',
+    'listingDeleteFailed': 'Could not delete the listing.',
+    'dashboardTab': 'Dashboard',
+    'addPropertyLabel': 'Add property',
+    'yourPropertiesLabel': 'Your properties',
+    'welcomeName': 'Welcome, {name}',
+    'trackListingsSubtitle': 'Track your property listings here.',
+    'totalLabel': 'Total',
+    'approvedLabel': 'Approved',
+    'pendingLabel': 'Under review',
+    'expiredLabel': 'Expired',
+    'noListingsYetTitle': 'No properties yet',
+    'noListingsYetSubtitle': 'Get started by adding your first property listing.',
   };
 }
