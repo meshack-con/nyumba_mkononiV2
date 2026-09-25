@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/user.dart';
 import '../services/api_client.dart';
 import '../theme/app_theme.dart';
@@ -53,7 +54,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     } on ApiException catch (error) {
       if (mounted) setState(() => _error = error.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Imeshindikana kupakia taarifa zako. Angalia mtandao wako.');
+      if (mounted) setState(() => _error = AppStrings.t('personalInfoLoadError'));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -78,11 +79,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     try {
       final updated = await ApiClient.instance.updateMyPhoto(bytes, result!.files.single.name);
       _applyUser(updated);
-      if (mounted) _showMessage('Profile picha imesasishwa.');
+      if (mounted) _showMessage(AppStrings.t('photoUpdated'));
     } on ApiException catch (error) {
       if (mounted) _showMessage(error.message);
     } catch (_) {
-      if (mounted) _showMessage('Imeshindikana kupakia picha. Jaribu tena.');
+      if (mounted) _showMessage(AppStrings.t('photoUploadFailed'));
     } finally {
       if (mounted) setState(() => _uploadingPhoto = false);
     }
@@ -104,12 +105,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       _applyUser(updated);
       if (mounted) {
         setState(() => _editing = false);
-        _showMessage('Taarifa zako zimehifadhiwa.');
+        _showMessage(AppStrings.t('infoSaved'));
       }
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Imeshindikana kuhifadhi taarifa. Jaribu tena.');
+      setState(() => _error = AppStrings.t('infoSaveFailed'));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -125,13 +126,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     return '${local.day}/${local.month}/${local.year}';
   }
 
-  String _roleLabel(String role) => role == 'seller' ? 'Muuzaji / Mpangishaji' : 'Mnunuzi / Mpangaji';
+  String _roleLabel(String role) => role == 'seller' ? AppStrings.t('sellerRoleLabel') : AppStrings.t('buyerRoleLabel');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Taarifa binafsi'),
+        title: Text(AppStrings.t('personalInfo')),
         actions: [
           if (!_loading && _user != null)
             TextButton(
@@ -146,7 +147,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     },
               child: _saving
                   ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(_editing ? 'Hifadhi' : 'Hariri', style: const TextStyle(fontWeight: FontWeight.w800)),
+                  : Text(_editing ? AppStrings.t('save') : AppStrings.t('edit'), style: const TextStyle(fontWeight: FontWeight.w800)),
             ),
         ],
       ),
@@ -157,9 +158,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Text(_error ?? 'Imeshindikana kupakia taarifa zako.', textAlign: TextAlign.center),
+                      Text(_error ?? AppStrings.t('personalInfoLoadErrorShort'), textAlign: TextAlign.center),
                       const SizedBox(height: 16),
-                      FilledButton(onPressed: _load, child: const Text('Jaribu tena')),
+                      FilledButton(onPressed: _load, child: Text(AppStrings.t('tryAgain'))),
                     ]),
                   ),
                 )
@@ -204,31 +205,31 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Center(child: Text('Gusa ikoni ya kamera kubadilisha profile picha', style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
+                        Center(child: Text(AppStrings.t('tapCameraHint'), style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
                         const SizedBox(height: 28),
-                        _label('Jina kamili'),
+                        _label(AppStrings.t('fullNameLabel')),
                         _editing ? _field(_fullName, Icons.badge_outlined) : _readOnly(_user!.fullName, Icons.badge_outlined),
                         const SizedBox(height: 16),
-                        _label('Namba ya simu'),
+                        _label(AppStrings.t('phoneLabel')),
                         _editing ? _field(_phone, Icons.phone_outlined, keyboard: TextInputType.phone) : _readOnly(_user!.phone, Icons.phone_outlined),
                         const SizedBox(height: 16),
-                        _label('Barua pepe'),
+                        _label(AppStrings.t('emailLabel')),
                         _editing
                             ? _field(_email, Icons.mail_outline_rounded, keyboard: TextInputType.emailAddress, required: false)
-                            : _readOnly(_user!.email?.isNotEmpty == true ? _user!.email! : 'Hujaweka barua pepe', Icons.mail_outline_rounded),
+                            : _readOnly(_user!.email?.isNotEmpty == true ? _user!.email! : AppStrings.t('noEmailSet'), Icons.mail_outline_rounded),
                         const SizedBox(height: 16),
-                        _label('Eneo'),
+                        _label(AppStrings.t('locationSection')),
                         _editing
                             ? _field(_area, Icons.location_on_outlined, required: false)
-                            : _readOnly(_user!.area?.isNotEmpty == true ? _user!.area! : 'Hujaweka eneo', Icons.location_on_outlined),
+                            : _readOnly(_user!.area?.isNotEmpty == true ? _user!.area! : AppStrings.t('noAreaSet'), Icons.location_on_outlined),
                         const SizedBox(height: 16),
-                        _label('Username'),
+                        _label(AppStrings.t('usernameLabel')),
                         _readOnly(_user!.username, Icons.alternate_email_rounded),
                         const SizedBox(height: 16),
-                        _label('Aina ya akaunti'),
+                        _label(AppStrings.t('accountTypeLabel')),
                         _readOnly(_roleLabel(_user!.role), Icons.people_outline_rounded),
                         const SizedBox(height: 16),
-                        _label('Tarehe ya kujiunga'),
+                        _label(AppStrings.t('joinDateLabel')),
                         _readOnly(_formatDate(_user!.createdAt), Icons.calendar_today_outlined),
                         if (_error != null) Padding(padding: const EdgeInsets.only(top: 20), child: Text(_error!, style: const TextStyle(color: Colors.red))),
                         if (_editing) ...[
@@ -242,7 +243,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                         _applyUser(_user!);
                                         setState(() => _editing = false);
                                       },
-                                child: const Text('Ghairi'),
+                                child: Text(AppStrings.t('cancel')),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -251,7 +252,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                 onPressed: _saving ? null : _save,
                                 child: _saving
                                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                    : const Text('Hifadhi mabadiliko'),
+                                    : Text(AppStrings.t('saveChanges')),
                               ),
                             ),
                           ]),
@@ -281,7 +282,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   Widget _field(TextEditingController controller, IconData icon, {TextInputType? keyboard, bool required = true}) => TextFormField(
         controller: controller,
         keyboardType: keyboard,
-        validator: required ? (value) => value == null || value.trim().isEmpty ? 'Sehemu hii inahitajika' : null : null,
+        validator: required ? (value) => value == null || value.trim().isEmpty ? AppStrings.t('requiredField') : null : null,
         decoration: InputDecoration(prefixIcon: Icon(icon)),
       );
 }
