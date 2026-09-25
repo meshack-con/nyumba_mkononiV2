@@ -1292,25 +1292,25 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                     crossAxisAlignment:
                         CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Vichujio',
-                        style: TextStyle(
+                      Text(
+                        AppStrings.t('filtersTitle'),
+                        style: const TextStyle(
                           color: _navy,
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Chagua vigezo unavyotaka. Si lazima uchague vyote.',
-                        style: TextStyle(
+                      Text(
+                        AppStrings.t('filtersSubtitle'),
+                        style: const TextStyle(
                           color: _muted,
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Bei (TZS)',
-                        style: TextStyle(
+                      Text(
+                        AppStrings.t('priceRangeLabel'),
+                        style: const TextStyle(
                           color: _navy,
                           fontWeight: FontWeight.w800,
                         ),
@@ -1327,9 +1327,9 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                                 _ThousandsInputFormatter(),
                               ],
                               decoration:
-                                  const InputDecoration(
-                                prefixText: 'Tsh ',
-                                labelText: 'Kuanzia',
+                                  InputDecoration(
+                                prefixText: AppStrings.t('tshPrefix'),
+                                labelText: AppStrings.t('fromPriceLabel'),
                               ),
                             ),
                           ),
@@ -1343,18 +1343,18 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                                 _ThousandsInputFormatter(),
                               ],
                               decoration:
-                                  const InputDecoration(
-                                prefixText: 'Tsh ',
-                                labelText: 'Hadi',
+                                  InputDecoration(
+                                prefixText: AppStrings.t('tshPrefix'),
+                                labelText: AppStrings.t('toPriceLabel'),
                               ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 18),
-                      const Text(
-                        'Tangazo limewekwa lini',
-                        style: TextStyle(
+                      Text(
+                        AppStrings.t('postedWithinLabel'),
+                        style: const TextStyle(
                           color: _navy,
                           fontWeight: FontWeight.w800,
                         ),
@@ -1365,13 +1365,13 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                         runSpacing: 8,
                         children: [
                           (
-                            'Wakati wowote',
+                            AppStrings.t('anyTimeLabel'),
                             null,
                           ),
-                          ('Leo', 'today'),
-                          ('Wiki hii', 'week'),
-                          ('Mwezi huu', 'month'),
-                          ('Mwaka huu', 'year'),
+                          (AppStrings.t('todayLabel'), 'today'),
+                          (AppStrings.t('thisWeekLabel'), 'week'),
+                          (AppStrings.t('thisMonthLabel'), 'month'),
+                          (AppStrings.t('thisYearLabel'), 'year'),
                         ].map((item) {
                           final selected =
                               posted == item.$2;
@@ -1400,64 +1400,64 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                         }).toList(),
                       ),
                       const SizedBox(height: 18),
-                      const Text(
-                        'Huduma zinazohitajika',
-                        style: TextStyle(
+                      Text(
+                        AppStrings.t('requiredAmenitiesLabel'),
+                        style: const TextStyle(
                           color: _navy,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       switchTile(
-                        'Wi-Fi',
+                        AppStrings.t('filterWifiLabel'),
                         Icons.wifi_rounded,
                         wifi,
                         (v) =>
                             wifi = v ? true : null,
                       ),
                       switchTile(
-                        'Sehemu ya kuegesha gari',
+                        AppStrings.t('carParkingLabel'),
                         Icons.local_parking_rounded,
                         parking,
                         (v) => parking =
                             v ? true : null,
                       ),
                       switchTile(
-                        'Choo cha ndani',
+                        AppStrings.t('indoorToiletLabel'),
                         Icons.wc_rounded,
                         toilet,
                         (v) => toilet =
                             v ? true : null,
                       ),
                       switchTile(
-                        'Umeme',
+                        AppStrings.t('filterElectricityLabel'),
                         Icons.bolt_rounded,
                         electricity,
                         (v) => electricity =
                             v ? true : null,
                       ),
                       switchTile(
-                        'Maji ndani',
+                        AppStrings.t('filterWaterInsideLabel'),
                         Icons.water_drop_rounded,
                         waterInside,
                         (v) => waterInside =
                             v ? true : null,
                       ),
                       switchTile(
-                        'Maji karibu',
+                        AppStrings.t('filterWaterNearbyLabel'),
                         Icons.water_drop_outlined,
                         waterNearby,
                         (v) => waterNearby =
                             v ? true : null,
                       ),
                       switchTile(
-                        'Samani (furnished)',
+                        AppStrings.t('filterFurnishedLabel'),
                         Icons.chair_rounded,
                         furnished,
                         (v) => furnished =
                             v ? true : null,
                       ),
                       switchTile(
-                        'Swimming pool',
+                        AppStrings.t('filterSwimmingPoolLabel'),
                         Icons.pool_rounded,
                         pool,
                         (v) => pool =
@@ -1483,8 +1483,8 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                                   posted = null;
                                 });
                               },
-                              child: const Text(
-                                'Futa vichujio',
+                              child: Text(
+                                AppStrings.t('clearFiltersButton'),
                               ),
                             ),
                           ),
@@ -1529,8 +1529,8 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
 
                                 _load();
                               },
-                              child: const Text(
-                                'Tafuta',
+                              child: Text(
+                                AppStrings.t('applyFiltersButton'),
                               ),
                             ),
                           ),
@@ -1679,8 +1679,10 @@ class _PropertyCard extends StatelessWidget {
                             Text(
                               property.status ==
                                       'approved'
-                                  ? 'Imethibitishwa'
-                                  : 'Inapitiwa',
+                                  ? AppStrings.t(
+                                      'propertyBadgeApproved')
+                                  : AppStrings.t(
+                                      'pendingLabel'),
                               style:
                                   const TextStyle(
                                 color: Colors.white,
@@ -1810,7 +1812,7 @@ class _PropertyCard extends StatelessWidget {
                             child: Text(
                               property.mode ==
                                       'rent'
-                                  ? '${property.formattedPrice} / mwezi'
+                                  ? '${property.formattedPrice}${AppStrings.t('priceMonthSuffix')}'
                                   : property.formattedPrice,
                               maxLines: 1,
                               overflow:
@@ -1885,8 +1887,8 @@ class _EmptyState extends StatelessWidget {
           if (action != null)
             TextButton(
               onPressed: action,
-              child: const Text(
-                'Jaribu tena',
+              child: Text(
+                AppStrings.t('tryAgain'),
               ),
             ),
         ],
@@ -1927,10 +1929,10 @@ class _ComingSoon extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Sehemu hii itakuwa tayari baada ya kuwasiliana na mwenye nyumba.',
+            Text(
+              AppStrings.t('comingSoonMessage'),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF65708A),
               ),
             ),
