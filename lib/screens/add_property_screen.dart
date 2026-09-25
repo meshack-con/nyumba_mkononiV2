@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../l10n/app_strings.dart';
 import '../models/listing_payment.dart';
 import '../services/api_client.dart';
 import '../services/location_service.dart';
@@ -54,36 +55,29 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   String? _paymentError;
 
   // --- Mpangilio wa hatua kwa hatua (wizard) - sehemu moja kwa wakati ------
-  static const _stepTitles = [
-    'Picha za nyumba',
-    'Taarifa za msingi',
-    'Maelezo',
-    'Huduma zilizopo',
-    'Eneo',
-    'Uthibitisho wa umiliki',
-    'Malipo na kutuma',
+  // Vichwa vya hatua vinatafsiriwa kulingana na lugha iliyochaguliwa (angalia
+  // AppStrings) - ndiyo maana hii ni getter na siyo static const.
+  static const _stepTitleKeys = [
+    'photosStepTitle',
+    'basicInfoSection',
+    'descriptionStepTitle',
+    'amenitiesSection',
+    'locationSection',
+    'ownershipVerificationTitle',
+    'paymentSubmitTitle',
   ];
-  int get _totalSteps => _stepTitles.length;
+  List<String> get _stepTitles => _stepTitleKeys.map(AppStrings.t).toList();
+  int get _totalSteps => _stepTitleKeys.length;
   int _step = 0;
   String? _stepError;
 
   // --- Eneo: kutafuta kiotomatiki kwa GPS -----------------------------
-  static const _locationProgressMessages = [
-    'Inaendelea...',
-    'Inachakata eneo lako...',
-    'Bado kidogo...',
-  ];
   Timer? _locationTimer;
   int _locationMsgIndex = 0;
   bool _detectingLocation = false;
   String? _locationError;
 
   // --- Malipo: maneno ya mchakato yanayobadilika wakati tunasubiri ------
-  static const _paymentProgressMessages = [
-    '📍 Inachakata malipo yako...',
-    '🔄 Inaendelea...',
-    '✅ Inamalizia mchakato...',
-  ];
   Timer? _paymentProgressTimer;
   int _paymentMsgIndex = 0;
 
@@ -151,7 +145,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     _locationTimer?.cancel();
     _locationTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
       if (!mounted) return;
-      setState(() => _locationMsgIndex = (_locationMsgIndex + 1) % _locationProgressMessages.length);
+      setState(() => _locationMsgIndex = (_locationMsgIndex + 1) % AppStrings.locationProgressMessages.length);
     });
     try {
       final result = await LocationService.detectCurrent();
@@ -163,7 +157,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         _detectingLocation = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Eneo limepatikana!'), duration: Duration(seconds: 2)),
+        SnackBar(content: Text(AppStrings.t('locationFound')), duration: const Duration(seconds: 2)),
       );
     } on LocationFailure catch (failure) {
       _locationTimer?.cancel();
@@ -172,7 +166,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     } catch (_) {
       _locationTimer?.cancel();
       if (!mounted) return;
-      setState(() { _detectingLocation = false; _locationError = 'Imeshindikana kupata eneo lako. Jaribu tena.'; });
+      setState(() { _detectingLocation = false; _locationError = AppStrings.t('locationFetchFailed'); });
     }
   }
 
@@ -182,29 +176,29 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     return showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Lipa TZS 10,000'),
+        title: Text(AppStrings.t('payTzs10000Title')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Weka namba ya simu (M-Pesa / Tigo Pesa / Airtel Money / Halo Pesa) utakayotumia kulipia ada ya kutangaza nyumba.'),
+            Text(AppStrings.t('paymentPhoneInstruction')),
             const SizedBox(height: 14),
             TextField(
               controller: controller,
               keyboardType: TextInputType.phone,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Namba ya simu', prefixIcon: Icon(Icons.phone_android_outlined), hintText: '07XXXXXXXX'),
+              decoration: InputDecoration(labelText: AppStrings.t('phoneLabel'), prefixIcon: const Icon(Icons.phone_android_outlined), hintText: AppStrings.t('phoneHintExample')),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Ghairi')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppStrings.t('cancel'))),
           ElevatedButton(
             onPressed: () {
               if (controller.text.trim().length < 7) return;
               Navigator.pop(dialogContext, controller.text.trim());
             },
-            child: const Text('Endelea kulipa'),
+            child: Text(AppStrings.t('continueToPay')),
           ),
         ],
       ),
@@ -218,7 +212,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     _paymentProgressTimer?.cancel();
     _paymentProgressTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
       if (!mounted) return;
-      setState(() => _paymentMsgIndex = (_paymentMsgIndex + 1) % _paymentProgressMessages.length);
+      setState(() => _paymentMsgIndex = (_paymentMsgIndex + 1) % AppStrings.paymentProgressMessages.length);
     });
     try {
       final payment = await ApiClient.instance.initiateListingFeePayment(phoneNumber: phone);
@@ -232,7 +226,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     } on ApiException catch (error) {
       setState(() => _paymentError = error.message);
     } catch (_) {
-      setState(() => _paymentError = 'Imeshindikana kuanzisha malipo. Jaribu tena.');
+      setState(() => _paymentError = AppStrings.t('paymentInitFailed'));
     } finally {
       _paymentProgressTimer?.cancel();
       if (mounted) setState(() => _paymentBusy = false);
@@ -261,19 +255,19 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           }
 
           final channel = _payment?.channel;
+          final channelPart = channel != null ? AppStrings.tParams('confirmPaymentChannelSuffix', {'channel': channel}) : '';
           return AlertDialog(
-            title: const Text('Thibitisha malipo'),
+            title: Text(AppStrings.t('confirmPaymentTitle')),
             content: Text(
               _paymentBusy
-                  ? 'Tunaangalia hali ya malipo yako...'
-                  : 'Angalia simu yako${channel != null ? ' ya $channel' : ''} - utaona ombi la kuweka PIN ili kuidhinisha malipo ya TZS 10,000. '
-                      'Ukishaweka PIN, bonyeza "Nimeshalipa" hapa kuthibitisha.',
+                  ? AppStrings.t('checkingPaymentStatus')
+                  : AppStrings.tParams('confirmPaymentInstruction', {'channel': channelPart}),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Nitathibitisha baadaye')),
+              TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppStrings.t('confirmLater'))),
               ElevatedButton(
                 onPressed: _paymentBusy ? null : checkNow,
-                child: const Text('Nimeshalipa'),
+                child: Text(AppStrings.t('iHavePaid')),
               ),
             ],
           );
@@ -286,20 +280,20 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   String? _validateStep(int step) {
     switch (step) {
       case 0:
-        return _photosComplete ? null : 'Weka picha 3 za nyumba kabla ya kuendelea.';
+        return _photosComplete ? null : AppStrings.t('photosRequiredError');
       case 1:
-        if (_name.text.trim().isEmpty) return 'Jaza jina la mtaa au kata.';
-        if (_priceDigits.isEmpty) return 'Jaza bei ya nyumba.';
-        if (int.tryParse(_priceDigits) == null) return 'Bei lazima iwe namba.';
+        if (_name.text.trim().isEmpty) return AppStrings.t('streetWardRequiredError');
+        if (_priceDigits.isEmpty) return AppStrings.t('priceRequiredError');
+        if (int.tryParse(_priceDigits) == null) return AppStrings.t('priceMustBeNumberError');
         return null;
       case 2:
-        return _description.text.trim().isEmpty ? 'Andika maelezo ya nyumba.' : null;
+        return _description.text.trim().isEmpty ? AppStrings.t('descriptionRequiredError') : null;
       case 3:
         return null; // huduma ni hiari
       case 4:
-        return _location == null ? 'Bonyeza "Weka eneo" kupata eneo la nyumba.' : null;
+        return _location == null ? AppStrings.t('locationRequiredError') : null;
       case 5:
-        return _document == null ? 'Pakia hati ya umiliki.' : null;
+        return _document == null ? AppStrings.t('documentRequiredError') : null;
       default:
         return null;
     }
@@ -334,7 +328,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       }
     }
     if (_payment == null || !_payment!.isSuccessful) {
-      setState(() => _error = 'Lipa TZS 10,000 kwanza kabla ya kutuma tangazo.');
+      setState(() => _error = AppStrings.t('paymentRequiredError'));
       return;
     }
 
@@ -368,13 +362,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tangazo limetumwa. Litapitiwa ndani ya masaa 24.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.t('listingSubmitted'))));
         Navigator.pop(context);
       }
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Imeshindikana kutuma tangazo.');
+      setState(() => _error = AppStrings.t('listingSubmitFailed'));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -408,7 +402,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Weka nyumba mpya', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19)),
+                      Text(AppStrings.t('addPropertyTitle'), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 19)),
                       IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded)),
                     ],
                   ),
@@ -449,7 +443,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Hatua ${_step + 1} ya $_totalSteps', style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text(AppStrings.tParams('stepHeader', {'step': '${_step + 1}', 'total': '$_totalSteps'}), style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700, fontSize: 13)),
               Text(_stepTitles[_step], style: const TextStyle(color: AppTheme.muted, fontSize: 13)),
             ],
           ),
@@ -473,12 +467,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       child: Row(
         children: [
           if (_step > 0) ...[
-            Expanded(child: OutlinedButton(onPressed: _goBack, child: const Text('Rudi nyuma'))),
+            Expanded(child: OutlinedButton(onPressed: _goBack, child: Text(AppStrings.t('goBackStep')))),
             const SizedBox(width: 12),
           ],
           Expanded(
             flex: 2,
-            child: ElevatedButton(onPressed: _goNext, child: const Text('Endelea')),
+            child: ElevatedButton(onPressed: _goNext, child: Text(AppStrings.t('continueButton'))),
           ),
         ],
       ),
@@ -508,8 +502,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _photosStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Picha za nyumba', _photosComplete ? 'Picha 3/3 zimechaguliwa' : '${_photos.where((p) => p != null).length}/3 picha zimechaguliwa'),
-          const Text('Weka picha 3 zinazoonyesha nyumba yako vizuri.', style: TextStyle(color: AppTheme.muted)),
+          _section(
+            AppStrings.t('photosStepTitle'),
+            _photosComplete
+                ? AppStrings.t('photosCompleteCaption')
+                : AppStrings.tCount('photosCountCaption', _photos.where((p) => p != null).length),
+          ),
+          Text(AppStrings.t('photosInstruction'), style: const TextStyle(color: AppTheme.muted)),
           const SizedBox(height: 14),
           SizedBox(
             height: 110,
@@ -574,18 +573,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _basicInfoStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Taarifa za msingi', 'Eleza nyumba yako kwa uwazi'),
-          TextField(controller: _name, decoration: const InputDecoration(labelText: 'Jina la mtaa au kata', prefixIcon: Icon(Icons.signpost_outlined))),
+          _section(AppStrings.t('basicInfoSection'), AppStrings.t('basicInfoCaption')),
+          TextField(controller: _name, decoration: InputDecoration(labelText: AppStrings.t('streetWardLabel'), prefixIcon: const Icon(Icons.signpost_outlined))),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: _type,
-                decoration: const InputDecoration(labelText: 'Aina'),
-                items: const [
-                  DropdownMenuItem(value: 'chumba', child: Text('Chumba')),
-                  DropdownMenuItem(value: 'nyumba', child: Text('Nyumba')),
-                  DropdownMenuItem(value: 'kiwanja', child: Text('Kiwanja')),
+                decoration: InputDecoration(labelText: AppStrings.t('typeLabel')),
+                items: [
+                  DropdownMenuItem(value: 'chumba', child: Text(AppStrings.t('propTypeChumba'))),
+                  DropdownMenuItem(value: 'nyumba', child: Text(AppStrings.t('propTypeNyumba'))),
+                  DropdownMenuItem(value: 'kiwanja', child: Text(AppStrings.t('propTypeKiwanja'))),
                 ],
                 onChanged: (value) => setState(() => _type = value!),
               ),
@@ -594,10 +593,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: _mode,
-                decoration: const InputDecoration(labelText: 'Hali'),
-                items: const [
-                  DropdownMenuItem(value: 'rent', child: Text('Kupangisha')),
-                  DropdownMenuItem(value: 'sale', child: Text('Kuuza')),
+                decoration: InputDecoration(labelText: AppStrings.t('modeLabel')),
+                items: [
+                  DropdownMenuItem(value: 'rent', child: Text(AppStrings.t('modeRent'))),
+                  DropdownMenuItem(value: 'sale', child: Text(AppStrings.t('modeSale'))),
                 ],
                 onChanged: (value) => setState(() => _mode = value!),
               ),
@@ -608,7 +607,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             controller: _price,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly, _ThousandsSeparatorInputFormatter()],
-            decoration: const InputDecoration(labelText: 'Bei kwa TZS', prefixIcon: Icon(Icons.payments_outlined)),
+            decoration: InputDecoration(labelText: AppStrings.t('priceLabelTzs'), prefixIcon: const Icon(Icons.payments_outlined)),
           ),
         ],
       );
@@ -617,8 +616,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _descriptionStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Maelezo ya nyumba', 'Toa maelezo kamili'),
-          TextField(controller: _description, minLines: 6, maxLines: 10, decoration: const InputDecoration(alignLabelWithHint: true, hintText: 'Mfano: Nyumba ya vyumba 2, jikoni la kisasa, karibu na barabara kuu...')),
+          _section(AppStrings.t('propertyDescriptionLabel'), AppStrings.t('descriptionStepCaption')),
+          TextField(controller: _description, minLines: 6, maxLines: 10, decoration: InputDecoration(alignLabelWithHint: true, hintText: AppStrings.t('descriptionHint'))),
         ],
       );
 
@@ -626,15 +625,15 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _amenitiesStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Huduma zilizopo', 'Chagua zote zinazopatikana'),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wifi_rounded), title: const Text('Wi-Fi ipo'), value: _wifi, onChanged: (value) => setState(() => _wifi = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_parking_rounded), title: const Text('Sehemu ya kuegesha gari'), value: _carParking, onChanged: (value) => setState(() => _carParking = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wc_rounded), title: const Text('Choo cha ndani'), value: _indoorToilet, onChanged: (value) => setState(() => _indoorToilet = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.bolt_rounded), title: const Text('Umeme upo'), value: _hasElectricity, onChanged: (value) => setState(() => _hasElectricity = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_rounded), title: const Text('Maji ndani ya nyumba'), value: _waterInside, onChanged: (value) => setState(() => _waterInside = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_outlined), title: const Text('Maji karibu na nyumba'), value: _waterNearby, onChanged: (value) => setState(() => _waterNearby = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.chair_rounded), title: const Text('Ina samani (furnished)'), value: _furnished, onChanged: (value) => setState(() => _furnished = value)),
-          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.pool_rounded), title: const Text('Ina swimming pool'), value: _swimmingPool, onChanged: (value) => setState(() => _swimmingPool = value)),
+          _section(AppStrings.t('amenitiesSection'), AppStrings.t('amenitiesCaption')),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wifi_rounded), title: Text(AppStrings.t('wifiAvailable')), value: _wifi, onChanged: (value) => setState(() => _wifi = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_parking_rounded), title: Text(AppStrings.t('carParkingLabel')), value: _carParking, onChanged: (value) => setState(() => _carParking = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.wc_rounded), title: Text(AppStrings.t('indoorToiletLabel')), value: _indoorToilet, onChanged: (value) => setState(() => _indoorToilet = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.bolt_rounded), title: Text(AppStrings.t('electricityAvailable')), value: _hasElectricity, onChanged: (value) => setState(() => _hasElectricity = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_rounded), title: Text(AppStrings.t('waterInsideLabel')), value: _waterInside, onChanged: (value) => setState(() => _waterInside = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.water_drop_outlined), title: Text(AppStrings.t('waterNearbyLabel')), value: _waterNearby, onChanged: (value) => setState(() => _waterNearby = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.chair_rounded), title: Text(AppStrings.t('furnishedLabel')), value: _furnished, onChanged: (value) => setState(() => _furnished = value)),
+          SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.pool_rounded), title: Text(AppStrings.t('swimmingPoolLabel')), value: _swimmingPool, onChanged: (value) => setState(() => _swimmingPool = value)),
         ],
       );
 
@@ -642,7 +641,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _locationStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Eneo', 'Bonyeza kitufe, tutatafuta eneo lako'),
+          _section(AppStrings.t('locationSection'), AppStrings.t('autoLocationCaption')),
           if (_location != null)
             Container(
               width: double.infinity,
@@ -665,12 +664,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   icon: _detectingLocation
                       ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : const Icon(Icons.my_location_rounded),
-                  label: Text(_location == null ? 'Weka eneo' : 'Tafuta eneo tena'),
+                  label: Text(_location == null ? AppStrings.t('setLocation') : AppStrings.t('detectLocationAgain')),
                 ),
                 if (_detectingLocation) ...[
                   const SizedBox(height: 12),
                   Text(
-                    _locationProgressMessages[_locationMsgIndex],
+                    AppStrings.locationProgressMessages[_locationMsgIndex],
                     style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
                   ),
                 ],
@@ -682,7 +681,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 TextButton.icon(
                   onPressed: _detectingLocation ? null : _pickLocationOnMap,
                   icon: const Icon(Icons.map_outlined, size: 18),
-                  label: const Text('Chagua kwenye ramani badala yake'),
+                  label: Text(AppStrings.t('pickOnMapInstead')),
                 ),
               ],
             ),
@@ -694,27 +693,27 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _documentStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Uthibitisho wa umiliki', _documentName ?? 'Hati inahitajika'),
+          _section(AppStrings.t('ownershipVerificationTitle'), _documentName ?? AppStrings.t('documentRequiredCaption')),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             margin: const EdgeInsets.only(bottom: 14),
             decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(12)),
-            child: const Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.info_outline_rounded, color: AppTheme.muted),
-                SizedBox(width: 10),
+                const Icon(Icons.info_outline_rounded, color: AppTheme.muted),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Hapa utapakia nyaraka yoyote inayothibitisha umiliki wako wa nyumba hii (inaweza kuwa picha au faili). Nyaraka hii itapitiwa na timu yetu ili kuhakikisha umiliki wako ni halali kabla ya nyumba yako kuwekwa kwenye mfumo.',
-                    style: TextStyle(color: AppTheme.muted, fontSize: 12.5),
+                    AppStrings.t('documentInfoText'),
+                    style: const TextStyle(color: AppTheme.muted, fontSize: 12.5),
                   ),
                 ),
               ],
             ),
           ),
-          OutlinedButton.icon(onPressed: _pickDocument, icon: const Icon(Icons.upload_file_outlined), label: Text(_documentName ?? 'Pakia hati')),
+          OutlinedButton.icon(onPressed: _pickDocument, icon: const Icon(Icons.upload_file_outlined), label: Text(_documentName ?? AppStrings.t('uploadDocument'))),
         ],
       );
 
@@ -722,7 +721,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget _paymentAndSubmitStep() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Malipo na kutuma', 'Hatua ya mwisho'),
+          _section(AppStrings.t('paymentSubmitTitle'), AppStrings.t('finalStepCaption')),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(12)),
@@ -735,8 +734,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 Expanded(
                   child: Text(
                     _payment?.isSuccessful == true
-                        ? 'Malipo ya TZS 10,000 yamekamilika. Sasa unaweza kutuma tangazo.'
-                        : 'Malipo ya tangazo ni TZS 10,000 (kupitia ClickPesa - M-Pesa/Tigo Pesa/Airtel Money/Halopesa). Tangazo litapitiwa ndani ya masaa 24 baada ya kutumwa.',
+                        ? AppStrings.t('paymentCompleteMsg')
+                        : AppStrings.t('paymentPendingMsg'),
                   ),
                 ),
               ],
@@ -751,23 +750,23 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               icon: _paymentBusy
                   ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.payments_outlined),
-              label: Text(_payment != null && _payment!.isPending ? 'Thibitisha / jaribu malipo tena' : 'Lipa TZS 10,000 kuendelea'),
+              label: Text(_payment != null && _payment!.isPending ? AppStrings.t('confirmOrRetryPayment') : AppStrings.t('payToContinue')),
             ),
             if (_paymentBusy) ...[
               const SizedBox(height: 10),
               Center(
                 child: Text(
-                  _paymentProgressMessages[_paymentMsgIndex],
+                  AppStrings.paymentProgressMessages[_paymentMsgIndex],
                   style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
                 ),
               ),
             ],
             const SizedBox(height: 10),
-            const ElevatedButton(onPressed: null, child: Text('Tuma tangazo — lipa kwanza')),
+            ElevatedButton(onPressed: null, child: Text(AppStrings.t('submitPayFirst'))),
           ] else
             ElevatedButton(
               onPressed: _loading ? null : _submit,
-              child: _loading ? const CircularProgressIndicator(color: Colors.white) : const Text('Tuma tangazo'),
+              child: _loading ? const CircularProgressIndicator(color: Colors.white) : Text(AppStrings.t('submitListing')),
             ),
         ],
       );
