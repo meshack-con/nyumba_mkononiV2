@@ -317,6 +317,25 @@ class AppStrings {
     'paymentRequiredError': 'Lipa TZS 10,000 kwanza kabla ya kutuma tangazo.',
     'listingSubmitted': 'Tangazo limetumwa. Litapitiwa ndani ya masaa 24.',
     'listingSubmitFailed': 'Imeshindikana kutuma tangazo.',
+
+    // Buyer home screen (nav, hero, search, categories, listings — Phase 8a)
+    'navSearchLabel': 'Tafuta',
+    'navFavoritesLabel': 'Pendwa',
+    'navMessagesLabel': 'Ujumbe',
+    'navHelpLabel': 'Msaada',
+    'navProfileLabel': 'Wasifu',
+    'bottomFavoritesLabel': 'Zilizohifadhiwa',
+    'heroHeadline': 'Tafuta nyumba, viwanja na fursa bora za makazi',
+    'heroTagline': 'Nyumba Mkononi – Mahali sahihi kwa mahitaji yako ya makazi',
+    'welcomeComma': 'Karibu,',
+    'searchHint': 'Dar es Salaam, Kariakoo...',
+    'filtersTooltip': 'Vichujio',
+    'rentModeButtonLabel': 'Kwa Kupanga',
+    'buyModeButtonLabel': 'Kwa Kununua',
+    'allCategoriesLabel': 'Zote',
+    'noMatchingListings': 'Hakuna matangazo yanayolingana na utafutaji wako.',
+    'verifiedPropertiesTitle': 'Mali zilizothibitishwa',
+    'propertiesCount': '{n} nyumba',
   };
 
   static const Map<String, String> _en = {
@@ -576,5 +595,24 @@ class AppStrings {
     'paymentRequiredError': 'Pay TZS 10,000 before submitting the listing.',
     'listingSubmitted': 'Listing submitted. It will be reviewed within 24 hours.',
     'listingSubmitFailed': 'Could not submit the listing.',
+
+    // Buyer home screen (nav, hero, search, categories, listings — Phase 8a)
+    'navSearchLabel': 'Search',
+    'navFavoritesLabel': 'Favorites',
+    'navMessagesLabel': 'Messages',
+    'navHelpLabel': 'Help',
+    'navProfileLabel': 'Profile',
+    'bottomFavoritesLabel': 'Saved',
+    'heroHeadline': 'Find homes, plots and the best places to live',
+    'heroTagline': 'Nyumba Mkononi – The right place for your housing needs',
+    'welcomeComma': 'Welcome,',
+    'searchHint': 'Dar es Salaam, Kariakoo...',
+    'filtersTooltip': 'Filters',
+    'rentModeButtonLabel': 'To Rent',
+    'buyModeButtonLabel': 'To Buy',
+    'allCategoriesLabel': 'All',
+    'noMatchingListings': 'No listings match your search.',
+    'verifiedPropertiesTitle': 'Verified properties',
+    'propertiesCount': '{n} properties',
   };
 }
