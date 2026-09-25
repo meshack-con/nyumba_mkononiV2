@@ -38,6 +38,18 @@ class AppStrings {
     'Working on it...', 'Processing your location...', 'Almost there...',
   ];
 
+  /// Ujumbe wa maendeleo wakati wa kuchakata malipo (add property screen).
+  static List<String> get paymentProgressMessages =>
+      LocaleController.instance.isEnglish ? _paymentProgressEn : _paymentProgressSw;
+
+  static const List<String> _paymentProgressSw = [
+    '📍 Inachakata malipo yako...', '🔄 Inaendelea...', '✅ Inamalizia mchakato...',
+  ];
+
+  static const List<String> _paymentProgressEn = [
+    '📍 Processing your payment...', '🔄 In progress...', '✅ Finishing up...',
+  ];
+
   static const List<String> _monthsSw = [
     'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni',
     'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba',
@@ -254,6 +266,57 @@ class AppStrings {
     'expiredLabel': 'Imeisha',
     'noListingsYetTitle': 'Bado hujaweka nyumba',
     'noListingsYetSubtitle': 'Anza kwa kuongeza tangazo la kwanza la nyumba yako.',
+
+    // Add property screen (wizard)
+    'addPropertyTitle': 'Weka nyumba mpya',
+    'stepHeader': 'Hatua {step} ya {total}',
+    'goBackStep': 'Rudi nyuma',
+    'photosStepTitle': 'Picha za nyumba',
+    'photosCompleteCaption': 'Picha 3/3 zimechaguliwa',
+    'photosCountCaption': '{n}/3 picha zimechaguliwa',
+    'photosInstruction': 'Weka picha 3 zinazoonyesha nyumba yako vizuri.',
+    'descriptionStepTitle': 'Maelezo',
+    'descriptionStepCaption': 'Toa maelezo kamili',
+    'descriptionHint': 'Mfano: Nyumba ya vyumba 2, jikoni la kisasa, karibu na barabara kuu...',
+    'autoLocationCaption': 'Bonyeza kitufe, tutatafuta eneo lako',
+    'pickOnMapInstead': 'Chagua kwenye ramani badala yake',
+    'locationFound': 'Eneo limepatikana!',
+    'ownershipVerificationTitle': 'Uthibitisho wa umiliki',
+    'documentRequiredCaption': 'Hati inahitajika',
+    'documentInfoText': 'Hapa utapakia nyaraka yoyote inayothibitisha umiliki wako wa nyumba hii (inaweza kuwa picha au faili). '
+        'Nyaraka hii itapitiwa na timu yetu ili kuhakikisha umiliki wako ni halali kabla ya nyumba yako kuwekwa kwenye mfumo.',
+    'uploadDocument': 'Pakia hati',
+    'paymentSubmitTitle': 'Malipo na kutuma',
+    'finalStepCaption': 'Hatua ya mwisho',
+    'paymentCompleteMsg': 'Malipo ya TZS 10,000 yamekamilika. Sasa unaweza kutuma tangazo.',
+    'paymentPendingMsg': 'Malipo ya tangazo ni TZS 10,000 (kupitia ClickPesa - M-Pesa/Tigo Pesa/Airtel Money/Halopesa). '
+        'Tangazo litapitiwa ndani ya masaa 24 baada ya kutumwa.',
+    'confirmOrRetryPayment': 'Thibitisha / jaribu malipo tena',
+    'payToContinue': 'Lipa TZS 10,000 kuendelea',
+    'submitPayFirst': 'Tuma tangazo — lipa kwanza',
+    'submitListing': 'Tuma tangazo',
+    'payTzs10000Title': 'Lipa TZS 10,000',
+    'paymentPhoneInstruction': 'Weka namba ya simu (M-Pesa / Tigo Pesa / Airtel Money / Halo Pesa) utakayotumia kulipia ada ya kutangaza nyumba.',
+    'phoneHintExample': '07XXXXXXXX',
+    'continueToPay': 'Endelea kulipa',
+    'confirmPaymentTitle': 'Thibitisha malipo',
+    'checkingPaymentStatus': 'Tunaangalia hali ya malipo yako...',
+    'confirmPaymentInstruction': 'Angalia simu yako{channel} - utaona ombi la kuweka PIN ili kuidhinisha malipo ya TZS 10,000. '
+        'Ukishaweka PIN, bonyeza "Nimeshalipa" hapa kuthibitisha.',
+    'confirmPaymentChannelSuffix': ' ya {channel}',
+    'confirmLater': 'Nitathibitisha baadaye',
+    'iHavePaid': 'Nimeshalipa',
+    'paymentInitFailed': 'Imeshindikana kuanzisha malipo. Jaribu tena.',
+    'photosRequiredError': 'Weka picha 3 za nyumba kabla ya kuendelea.',
+    'streetWardRequiredError': 'Jaza jina la mtaa au kata.',
+    'priceRequiredError': 'Jaza bei ya nyumba.',
+    'priceMustBeNumberError': 'Bei lazima iwe namba.',
+    'descriptionRequiredError': 'Andika maelezo ya nyumba.',
+    'locationRequiredError': 'Bonyeza "Weka eneo" kupata eneo la nyumba.',
+    'documentRequiredError': 'Pakia hati ya umiliki.',
+    'paymentRequiredError': 'Lipa TZS 10,000 kwanza kabla ya kutuma tangazo.',
+    'listingSubmitted': 'Tangazo limetumwa. Litapitiwa ndani ya masaa 24.',
+    'listingSubmitFailed': 'Imeshindikana kutuma tangazo.',
   };
 
   static const Map<String, String> _en = {
@@ -462,5 +525,56 @@ class AppStrings {
     'expiredLabel': 'Expired',
     'noListingsYetTitle': 'No properties yet',
     'noListingsYetSubtitle': 'Get started by adding your first property listing.',
+
+    // Add property screen (wizard)
+    'addPropertyTitle': 'Add new property',
+    'stepHeader': 'Step {step} of {total}',
+    'goBackStep': 'Go back',
+    'photosStepTitle': 'Property photos',
+    'photosCompleteCaption': 'Photos 3/3 selected',
+    'photosCountCaption': '{n}/3 photos selected',
+    'photosInstruction': 'Add 3 photos that show your property clearly.',
+    'descriptionStepTitle': 'Description',
+    'descriptionStepCaption': 'Give a full description',
+    'descriptionHint': 'e.g. 2-bedroom house, modern kitchen, near the main road...',
+    'autoLocationCaption': 'Tap the button, we\'ll find your location',
+    'pickOnMapInstead': 'Choose on the map instead',
+    'locationFound': 'Location found!',
+    'ownershipVerificationTitle': 'Proof of ownership',
+    'documentRequiredCaption': 'Document required',
+    'documentInfoText': 'Here you\'ll upload any document proving your ownership of this property (it can be a photo or a file). '
+        'This document will be reviewed by our team to confirm your ownership is valid before your property is listed.',
+    'uploadDocument': 'Upload document',
+    'paymentSubmitTitle': 'Payment & submit',
+    'finalStepCaption': 'Final step',
+    'paymentCompleteMsg': 'Your TZS 10,000 payment is complete. You can now submit the listing.',
+    'paymentPendingMsg': 'The listing fee is TZS 10,000 (via ClickPesa - M-Pesa/Tigo Pesa/Airtel Money/Halopesa). '
+        'The listing will be reviewed within 24 hours after submission.',
+    'confirmOrRetryPayment': 'Confirm / retry payment',
+    'payToContinue': 'Pay TZS 10,000 to continue',
+    'submitPayFirst': 'Submit listing — pay first',
+    'submitListing': 'Submit listing',
+    'payTzs10000Title': 'Pay TZS 10,000',
+    'paymentPhoneInstruction': 'Enter the phone number (M-Pesa / Tigo Pesa / Airtel Money / Halo Pesa) you will use to pay the listing fee.',
+    'phoneHintExample': '07XXXXXXXX',
+    'continueToPay': 'Continue to pay',
+    'confirmPaymentTitle': 'Confirm payment',
+    'checkingPaymentStatus': 'Checking your payment status...',
+    'confirmPaymentInstruction': 'Check your phone{channel} - you\'ll see a prompt to enter your PIN to approve the TZS 10,000 payment. '
+        'Once you\'ve entered it, tap "I\'ve paid" here to confirm.',
+    'confirmPaymentChannelSuffix': ' on {channel}',
+    'confirmLater': 'I\'ll confirm later',
+    'iHavePaid': 'I\'ve paid',
+    'paymentInitFailed': 'Could not start the payment. Please try again.',
+    'photosRequiredError': 'Add 3 property photos before continuing.',
+    'streetWardRequiredError': 'Enter the street or ward name.',
+    'priceRequiredError': 'Enter the property price.',
+    'priceMustBeNumberError': 'Price must be a number.',
+    'descriptionRequiredError': 'Write a description of the property.',
+    'locationRequiredError': 'Tap "Set location" to get the property location.',
+    'documentRequiredError': 'Upload the ownership document.',
+    'paymentRequiredError': 'Pay TZS 10,000 before submitting the listing.',
+    'listingSubmitted': 'Listing submitted. It will be reviewed within 24 hours.',
+    'listingSubmitFailed': 'Could not submit the listing.',
   };
 }
