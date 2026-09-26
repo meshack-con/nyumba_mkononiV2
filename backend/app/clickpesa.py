@@ -179,7 +179,13 @@ async def initiate_ussd_push(*, order_reference: str, amount: int, phone_number:
         "orderReference": order_reference,
         "phoneNumber": phone_number,
     })
-    async with httpx.AsyncClient(timeout=30) as client:
+    # MUHIMU: ClickPesa mara nyingi HAIRUDISHI majibu mara moja - inasubiri
+    # mpaka muuzaji amalize kuweka PIN kwenye simu yake (au muda wa USSD
+    # session kwisha), jambo ambalo laweza kuchukua zaidi ya sekunde 30.
+    # Timeout fupi hapa inasababisha httpx kutoa TimeoutException HATA
+    # KAMA malipo yenyewe yatakamilika baadaye kwenye mtandao wa simu -
+    # ndiyo maana tumeongeza kwa muda mrefu zaidi (sekunde 90).
+    async with httpx.AsyncClient(timeout=90) as client:
         response = await client.post(
             f"{settings.clickpesa_base_url}/payments/initiate-ussd-push-request",
             headers=await _auth_headers(),
