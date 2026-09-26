@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import uuid
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -71,14 +72,32 @@ async def initiate_listing_fee_payment(
             phone_number=phone_number,
         )
     except clickpesa.ClickPesaError as error:
+        # ClickPesa YENYEWE imekataa ombi wazi (mfano: namba batili,
+        # channel haipatikani, n.k.) - hii ni kushindwa kwa uhakika kabla
+        # ya USSD kutumwa kwenye simu, hivyo ni salama kuweka FAILED.
         payment.status = PaymentStatus.FAILED
         db.commit()
         raise HTTPException(status_code=502, detail=f"Imeshindikana kuanzisha malipo: {error}") from None
+    except (httpx.TimeoutException, httpx.ConnectError, httpx.HTTPError) as error:
+        # Ombi la HTTP kwenda ClickPesa limekwama/limechelewa (mfano:
+        # muuzaji amechukua muda kuweka PIN yake) - HATUJUI kama malipo
+        # yamefanikiwa au la upande wa mtandao wa simu. TUSIWEKE FAILED
+        # papo hapo: tunaacha PENDING na kumrudishia mtumiaji tx_ref ile
+        # ile, ili frontend ianze ku-poll/kusubiri webhook ithibitishe
+        # ukweli halisi badala ya kuzima malipo ambayo huenda tayari
+        # yamekamilika kwenye simu ya muuzaji.
+        db.commit()
+        return PaymentInitiateResponse(
+            tx_ref=payment.tx_ref,
+            amount=payment.amount,
+            currency=payment.currency,
+            status=payment.status.value,
+            channel=None,
+        )
     except Exception as error:
-        # Huku ndiko kunakoshikwa httpx.ConnectError / TimeoutException /
-        # hitilafu nyingine ya mtandao inapowasiliana na ClickPesa - bila
-        # hii, exception hii inatoroka bila kushikwa na inasababisha 500
-        # isiyo na CORS headers (browser inaonyesha "blocked by CORS").
+        # Hitilafu nyingine isiyotarajiwa - bila hii, exception hii
+        # inatoroka bila kushikwa na inasababisha 500 isiyo na CORS
+        # headers (browser inaonyesha "blocked by CORS").
         payment.status = PaymentStatus.FAILED
         db.commit()
         raise HTTPException(status_code=502, detail=f"Imeshindikana kuwasiliana na ClickPesa: {error}") from None
