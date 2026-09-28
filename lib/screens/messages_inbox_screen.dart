@@ -63,9 +63,9 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 80),
                 child: Column(children: [
-                  const Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppTheme.muted),
+                  Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppTheme.muted),
                   const SizedBox(height: 12),
-                  Text(AppStrings.t('noMessagesYet'), style: const TextStyle(color: AppTheme.muted)),
+                  Text(AppStrings.t('noMessagesYet'), style: TextStyle(color: AppTheme.muted)),
                 ]),
               ),
             )
@@ -94,7 +94,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                   ),
                   isThreeLine: true,
                   trailing: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
-                    Text(_formatWhen(thread.lastMessageAt), style: const TextStyle(fontSize: 11, color: AppTheme.muted)),
+                    Text(_formatWhen(thread.lastMessageAt), style: TextStyle(fontSize: 11, color: AppTheme.muted)),
                     const SizedBox(height: 6),
                     if (unread)
                       Container(
