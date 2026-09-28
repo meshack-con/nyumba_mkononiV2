@@ -126,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: _loading
               ? const Center(child: CircularProgressIndicator())
               : _messages.isEmpty
-                  ? Center(child: Text(AppStrings.t('noChatMessagesYet'), style: const TextStyle(color: AppTheme.muted)))
+                  ? Center(child: Text(AppStrings.t('noChatMessagesYet'), style: TextStyle(color: AppTheme.muted)))
                   : ListView.builder(
                       controller: _scrollController,
                       padding: const EdgeInsets.all(16),
