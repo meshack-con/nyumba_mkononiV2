@@ -63,9 +63,12 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
 
   static Color get _pink => AppTheme.primary;
   static Color get _pinkDark => AppTheme.primaryContainer;
-  static const Color _navy = Color(0xFF10234D);
-  static const Color _muted = Color(0xFF65708A);
-  static const Color _page = Color(0xFFF8F7FA);
+  static Color get _navy =>
+      AppTheme.isDarkMode ? AppTheme.darkText : const Color(0xFF10234D);
+  static Color get _muted =>
+      AppTheme.isDarkMode ? AppTheme.darkMuted : const Color(0xFF65708A);
+  static Color get _page =>
+      AppTheme.isDarkMode ? AppTheme.darkSurface : const Color(0xFFF8F7FA);
 
   @override
   void initState() {
@@ -281,15 +284,15 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         _selectTab(index);
       },
       labelType: NavigationRailLabelType.all,
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.card,
       selectedIconTheme: IconThemeData(color: _pink),
-      unselectedIconTheme: const IconThemeData(color: _navy),
+      unselectedIconTheme: IconThemeData(color: _navy),
       selectedLabelTextStyle: TextStyle(
         color: _pink,
         fontWeight: FontWeight.w800,
         fontSize: 11,
       ),
-      unselectedLabelTextStyle: const TextStyle(
+      unselectedLabelTextStyle: TextStyle(
         color: _navy,
         fontSize: 11,
       ),
@@ -329,7 +332,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
   Widget _bottomNavigation() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.card,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(.08),
@@ -441,7 +444,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
   Widget _buildHome() {
     return RefreshIndicator(
       color: _pink,
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.card,
       onRefresh: _load,
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -570,7 +573,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           AppStrings.t('heroHeadline'),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             color: _navy,
             fontSize: 22,
             fontWeight: FontWeight.w900,
@@ -581,7 +584,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         const SizedBox(height: 5),
         Text(
           AppStrings.t('heroTagline'),
-          style: const TextStyle(
+          style: TextStyle(
             color: _muted,
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -604,7 +607,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         const SizedBox(height: 13),
         Text(
           AppStrings.t('heroHeadline'),
-          style: const TextStyle(
+          style: TextStyle(
             color: _navy,
             fontSize: 19,
             fontWeight: FontWeight.w900,
@@ -616,7 +619,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           AppStrings.t('heroTagline'),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             color: _muted,
             fontSize: 11,
             fontWeight: FontWeight.w500,
@@ -656,7 +659,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           children: [
             Text(
               AppStrings.t('welcomeComma'),
-              style: const TextStyle(
+              style: TextStyle(
                 color: _navy,
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -747,7 +750,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
         12,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.card,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: _pink.withOpacity(.10),
@@ -767,14 +770,14 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
             child: TextField(
               controller: _search,
               onSubmitted: (_) => _load(),
-              style: const TextStyle(
+              style: TextStyle(
                 color: _navy,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
                 hintText: AppStrings.t('searchHint'),
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   color: _muted,
                   fontSize: 12,
                 ),
@@ -799,7 +802,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                   ),
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.card,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 14,
                 ),
@@ -887,7 +890,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
           decoration: BoxDecoration(
             color: active
                 ? _pink
-                : Colors.white,
+                : AppTheme.card,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: active
@@ -995,7 +998,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
             },
             selectedColor: _pink,
             showCheckmark: false,
-            backgroundColor: Colors.white,
+            backgroundColor: AppTheme.card,
             side: BorderSide(
               color: selected
                   ? _pink
@@ -1021,19 +1024,19 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                     size: 15,
                   )
                 else if (entry.value == 'chumba')
-                  const Icon(
+                  Icon(
                     Icons.bed_rounded,
                     color: _navy,
                     size: 15,
                   )
                 else if (entry.value == 'nyumba')
-                  const Icon(
+                  Icon(
                     Icons.home_rounded,
                     color: _navy,
                     size: 15,
                   )
                 else if (entry.value == 'kiwanja')
-                  const Icon(
+                  Icon(
                     Icons.landscape_rounded,
                     color: _navy,
                     size: 15,
@@ -1133,7 +1136,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                   const SizedBox(width: 9),
                   Text(
                     AppStrings.t('verifiedPropertiesTitle'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: _navy,
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -1240,7 +1243,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.card,
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
@@ -1259,7 +1262,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                 ),
                 title: Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: _navy,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1294,7 +1297,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                     children: [
                       Text(
                         AppStrings.t('filtersTitle'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _navy,
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
@@ -1303,14 +1306,14 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                       const SizedBox(height: 4),
                       Text(
                         AppStrings.t('filtersSubtitle'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _muted,
                         ),
                       ),
                       const SizedBox(height: 20),
                       Text(
                         AppStrings.t('priceRangeLabel'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _navy,
                           fontWeight: FontWeight.w800,
                         ),
@@ -1354,7 +1357,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                       const SizedBox(height: 18),
                       Text(
                         AppStrings.t('postedWithinLabel'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _navy,
                           fontWeight: FontWeight.w800,
                         ),
@@ -1402,7 +1405,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
                       const SizedBox(height: 18),
                       Text(
                         AppStrings.t('requiredAmenitiesLabel'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _navy,
                           fontWeight: FontWeight.w800,
                         ),
@@ -1582,8 +1585,10 @@ class _PropertyCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static Color get pink => AppTheme.primary;
-  static const Color navy = Color(0xFF10234D);
-  static const Color muted = Color(0xFF65708A);
+  static Color get navy =>
+      AppTheme.isDarkMode ? AppTheme.darkText : const Color(0xFF10234D);
+  static Color get muted =>
+      AppTheme.isDarkMode ? AppTheme.darkMuted : const Color(0xFF65708A);
 
   @override
   Widget build(BuildContext context) {
@@ -1594,7 +1599,7 @@ class _PropertyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.card,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: Colors.black.withOpacity(.045),
@@ -1622,8 +1627,8 @@ class _PropertyCard extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     if (property.photoUrls.isEmpty)
-                      const ColoredBox(
-                        color: Color(0xFFF1F2F5),
+                      ColoredBox(
+                        color: AppTheme.sand,
                         child: Icon(
                           Icons.home_work_rounded,
                           size: 42,
@@ -1640,8 +1645,8 @@ class _PropertyCard extends StatelessWidget {
                             FilterQuality.high,
                         errorBuilder:
                             (_, __, ___) {
-                          return const ColoredBox(
-                            color: Color(0xFFF1F2F5),
+                          return ColoredBox(
+                            color: AppTheme.sand,
                             child: Icon(
                               Icons.home_work_rounded,
                               size: 42,
@@ -1700,7 +1705,7 @@ class _PropertyCard extends StatelessWidget {
                       right: 8,
                       top: 7,
                       child: Material(
-                        color: Colors.white,
+                        color: AppTheme.card,
                         shape:
                             const CircleBorder(),
                         child: InkWell(
@@ -1726,7 +1731,7 @@ class _PropertyCard extends StatelessWidget {
                         right: 8,
                         top: 7,
                         child: Material(
-                          color: Colors.white,
+                          color: AppTheme.card,
                           shape:
                               const CircleBorder(),
                           child: InkWell(
@@ -1768,7 +1773,7 @@ class _PropertyCard extends StatelessWidget {
                         maxLines: 2,
                         overflow:
                             TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: navy,
                           fontSize: 13,
                           fontWeight:
@@ -1779,7 +1784,7 @@ class _PropertyCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons
                                 .location_on_outlined,
                             size: 13,
@@ -1858,8 +1863,8 @@ class _EmptyState extends StatelessWidget {
   final String message;
   final VoidCallback? action;
 
-  static const Color muted =
-      Color(0xFF65708A);
+  static Color get muted =>
+      AppTheme.isDarkMode ? AppTheme.darkMuted : const Color(0xFF65708A);
 
   @override
   Widget build(BuildContext context) {
@@ -1879,7 +1884,7 @@ class _EmptyState extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: muted,
               fontSize: 13,
             ),
@@ -1932,8 +1937,8 @@ class _ComingSoon extends StatelessWidget {
             Text(
               AppStrings.t('comingSoonMessage'),
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF65708A),
+              style: TextStyle(
+                color: AppTheme.isDarkMode ? AppTheme.darkMuted : const Color(0xFF65708A),
               ),
             ),
           ],
