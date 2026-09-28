@@ -59,6 +59,7 @@ class ThemeController extends ChangeNotifier {
     if (mode == _mode) return;
     _mode = mode;
     notifyListeners();
+    _rebuildWholeApp();
     try {
       final prefs = await SharedPreferences.getInstance();
       if (_userId != null) {
