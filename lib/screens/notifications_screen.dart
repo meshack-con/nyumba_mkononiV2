@@ -101,7 +101,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 24),
                         child: Column(children: [
-                          Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.muted)),
+                          Text(_error!, textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted)),
                           const SizedBox(height: 16),
                           FilledButton(onPressed: _load, child: Text(AppStrings.t('tryAgain'))),
                         ]),
@@ -115,9 +115,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 100),
                             child: Column(children: [
-                              const Icon(Icons.notifications_none_rounded, size: 48, color: AppTheme.muted),
+                              Icon(Icons.notifications_none_rounded, size: 48, color: AppTheme.muted),
                               const SizedBox(height: 12),
-                              Text(AppStrings.t('noNotificationsYet'), style: const TextStyle(color: AppTheme.muted)),
+                              Text(AppStrings.t('noNotificationsYet'), style: TextStyle(color: AppTheme.muted)),
                             ]),
                           ),
                         ],
@@ -147,7 +147,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                             isThreeLine: true,
                             trailing: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
-                              Text(_formatWhen(item.createdAt), style: const TextStyle(fontSize: 11, color: AppTheme.muted)),
+                              Text(_formatWhen(item.createdAt), style: TextStyle(fontSize: 11, color: AppTheme.muted)),
                               const SizedBox(height: 6),
                               if (unread) Container(width: 9, height: 9, decoration: BoxDecoration(color: AppTheme.primary, shape: BoxShape.circle)),
                             ]),
