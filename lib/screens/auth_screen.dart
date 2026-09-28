@@ -297,7 +297,7 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(height: 8),
             Text(
               AppStrings.locationProgressMessages[_locationMsgIndex],
-              style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic, fontSize: 12),
+              style: TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic, fontSize: 12),
             ),
           ],
           if (_locationError != null) ...[
