@@ -205,7 +205,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Center(child: Text(AppStrings.t('tapCameraHint'), style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
+                        Center(child: Text(AppStrings.t('tapCameraHint'), style: TextStyle(color: AppTheme.muted, fontSize: 12))),
                         const SizedBox(height: 28),
                         _label(AppStrings.t('fullNameLabel')),
                         _editing ? _field(_fullName, Icons.badge_outlined) : _readOnly(_user!.fullName, Icons.badge_outlined),
@@ -266,7 +266,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   Widget _label(String text) => Padding(
         padding: const EdgeInsets.only(bottom: 6, left: 4),
-        child: Text(text, style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700, fontSize: 12)),
+        child: Text(text, style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700, fontSize: 12)),
       );
 
   Widget _readOnly(String value, IconData icon) => Container(
