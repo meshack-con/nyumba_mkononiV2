@@ -188,7 +188,7 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
-            Flexible(child: Text(caption, textAlign: TextAlign.right, style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
+            Flexible(child: Text(caption, textAlign: TextAlign.right, style: TextStyle(color: AppTheme.muted, fontSize: 12))),
           ],
         ),
       );
