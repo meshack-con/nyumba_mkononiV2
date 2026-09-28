@@ -47,7 +47,7 @@ class NotificationDetailScreen extends StatelessWidget {
                   children: [
                     Text(item.title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
                     const SizedBox(height: 4),
-                    Text(_formatFull(item.createdAt), style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+                    Text(_formatFull(item.createdAt), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
                   ],
                 ),
               ),
