@@ -174,7 +174,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
               itemBuilder: (_, index) => Image.network(
                 ApiClient.instance.assetUrl(property.photoUrls[index]),
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const ColoredBox(color: AppTheme.sand, child: Icon(Icons.home_work_outlined, size: 60)),
+                errorBuilder: (_, __, ___) => ColoredBox(color: AppTheme.sand, child: Icon(Icons.home_work_outlined, size: 60)),
               ),
             ),
             Positioned(
@@ -194,13 +194,13 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
             Text(property.name, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
             const SizedBox(height: 8),
             Row(children: [
-              const Icon(Icons.location_on_outlined, size: 18, color: AppTheme.muted),
+              Icon(Icons.location_on_outlined, size: 18, color: AppTheme.muted),
               const SizedBox(width: 5),
-              Expanded(child: Text(property.locationLabel, style: const TextStyle(color: AppTheme.muted))),
+              Expanded(child: Text(property.locationLabel, style: TextStyle(color: AppTheme.muted))),
             ]),
             const SizedBox(height: 18),
             Text(property.formattedPrice, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.coral, fontWeight: FontWeight.w900)),
-            Text(property.mode == 'rent' ? AppStrings.t('forRent') : AppStrings.t('forSale'), style: const TextStyle(color: AppTheme.muted)),
+            Text(property.mode == 'rent' ? AppStrings.t('forRent') : AppStrings.t('forSale'), style: TextStyle(color: AppTheme.muted)),
             const SizedBox(height: 22),
             Wrap(spacing: 8, runSpacing: 8, children: [
               Chip(label: Text(PropertyTypes.label(property.type))),
@@ -274,20 +274,20 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
             else if (_contact != null)
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
-                  const Icon(Icons.person_rounded, size: 18, color: AppTheme.muted),
+                  Icon(Icons.person_rounded, size: 18, color: AppTheme.muted),
                   const SizedBox(width: 8),
                   Text(_contact!.ownerName, style: const TextStyle(fontWeight: FontWeight.w800)),
                 ]),
                 const SizedBox(height: 6),
                 Row(children: [
-                  const Icon(Icons.phone_rounded, size: 18, color: AppTheme.muted),
+                  Icon(Icons.phone_rounded, size: 18, color: AppTheme.muted),
                   const SizedBox(width: 8),
                   Text(_contact!.ownerPhone),
                 ]),
                 if (_contact!.ownerEmail != null) ...[
                   const SizedBox(height: 6),
                   Row(children: [
-                    const Icon(Icons.email_outlined, size: 18, color: AppTheme.muted),
+                    Icon(Icons.email_outlined, size: 18, color: AppTheme.muted),
                     const SizedBox(width: 8),
                     Text(_contact!.ownerEmail!),
                   ]),
