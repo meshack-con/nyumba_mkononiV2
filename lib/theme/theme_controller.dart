@@ -10,7 +10,8 @@ class AccentOption {
   final Color container;
 }
 
-/// Inahifadhi chaguo la mtumiaji: White/Dark mode na rangi kuu.
+/// Inahifadhi chaguo la mtumiaji la rangi kuu. App inatumia muonekano
+/// wa Nyeupe (light) pekee.
 class ThemeController extends ChangeNotifier {
   ThemeController._();
   static final ThemeController instance = ThemeController._();
@@ -28,7 +29,7 @@ class ThemeController extends ChangeNotifier {
     AccentOption('red', 'Nyekundu', Color(0xFFC62828), Color(0xFFE53935)),
   ];
 
-  ThemeMode _mode = ThemeMode.light;
+  final ThemeMode _mode = ThemeMode.light;
   AccentOption _accent = accents.first;
 
   ThemeMode get mode => _mode;
@@ -43,31 +44,13 @@ class ThemeController extends ChangeNotifier {
     _userId = userId;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final modeKey = userId == null ? null : 'theme_mode_user_$userId';
       final accentKey = userId == null ? null : 'accent_color_user_$userId';
-      _mode = modeKey != null && prefs.getString(modeKey) == 'dark' ? ThemeMode.dark : ThemeMode.light;
       final id = accentKey == null ? null : prefs.getString(accentKey);
       _accent = accents.firstWhere((a) => a.id == id, orElse: () => accents.first);
     } catch (_) {
-      _mode = ThemeMode.light;
       _accent = accents.first;
     }
     notifyListeners();
-  }
-
-  Future<void> setMode(ThemeMode mode) async {
-    if (mode == _mode) return;
-    _mode = mode;
-    notifyListeners();
-    _rebuildWholeApp();
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      if (_userId != null) {
-        await prefs.setString('theme_mode_user_${_userId!}', mode == ThemeMode.dark ? 'dark' : 'light');
-      }
-    } catch (_) {
-      // Chaguo linabaki kwa kipindi hiki hata kama kuhifadhi kumeshindwa.
-    }
   }
 
   Future<void> setAccent(AccentOption option) async {
