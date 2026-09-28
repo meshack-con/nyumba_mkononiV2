@@ -209,7 +209,7 @@ class _TypingIndicator extends StatelessWidget {
         children: [
           const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
           const SizedBox(width: 8),
-          Text(AppStrings.t('assistantTyping'), style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          Text(AppStrings.t('assistantTyping'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
         ],
       );
 }
