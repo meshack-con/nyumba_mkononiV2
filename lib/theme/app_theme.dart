@@ -18,10 +18,13 @@ class AppTheme {
   }
 
   static const surface = Color(0xFFF8F9FA);
-  static const surfaceLow = Color(0xFFF3F4F5);
-  static const navy = Color(0xFF1A1A2E);
-  static const muted = Color(0xFF5B3F43);
-  static const success = Color(0xFF006B1B);
+
+  // Rangi za mwanga (light mode) - zinatumika ndani ya ThemeData tu.
+  static const lightSurfaceLow = Color(0xFFF3F4F5);
+  static const lightNavy = Color(0xFF1A1A2E);
+  static const lightMuted = Color(0xFF5B3F43);
+  static const lightSuccess = Color(0xFF006B1B);
+  static const lightMint = Color(0xFFE6F4EA);
 
   // Dark mode palette
   static const darkSurface = Color(0xFF121218);
@@ -31,12 +34,26 @@ class AppTheme {
   static const darkMuted = Color(0xFFCDBDC1);
   static const darkSuccess = Color(0xFF6FDC8C);
 
+  static const darkMint = Color(0xFF1F3A2A);
+
+  /// True wakati dark mode imewashwa.
+  static bool get isDarkMode => ThemeController.instance.isDark;
+
+  // Rangi zinazofuata theme (white/dark) kiotomatiki. Screens zinazotumia
+  // AppTheme.navy / muted / sand / surfaceLow / mint / card zitaonekana vizuri
+  // kwenye theme zote mbili (maandishi yanabadilika pamoja na background).
+  static Color get navy => isDarkMode ? darkText : lightNavy;
+  static Color get muted => isDarkMode ? darkMuted : lightMuted;
+  static Color get surfaceLow => isDarkMode ? darkSurfaceLow : lightSurfaceLow;
+  static Color get success => isDarkMode ? darkSuccess : lightSuccess;
+  static Color get mint => isDarkMode ? darkMint : lightMint;
+  static Color get card => isDarkMode ? darkCard : Colors.white;
+  static Color get cream => isDarkMode ? darkSurface : surface;
+  static Color get sand => surfaceLow;
+
   // Compatibility aliases used by the existing screens.
-  static const ink = navy;
+  static const ink = lightNavy; // rangi ya background nyeusi (maandishi meupe juu yake)
   static Color get coral => primary;
-  static const cream = surface;
-  static const sand = surfaceLow;
-  static const mint = Color(0xFFE6F4EA);
 
   static ThemeData get light => _build(Brightness.light);
   static ThemeData get dark => _build(Brightness.dark);
@@ -44,10 +61,10 @@ class AppTheme {
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
     final bg = isDark ? darkSurface : surface;
-    final low = isDark ? darkSurfaceLow : surfaceLow;
+    final low = isDark ? darkSurfaceLow : lightSurfaceLow;
     final card = isDark ? darkCard : Colors.white;
-    final text = isDark ? darkText : navy;
-    final variant = isDark ? darkMuted : muted;
+    final text = isDark ? darkText : lightNavy;
+    final variant = isDark ? darkMuted : lightMuted;
     final accent = isDark ? darkAccent : primary;
     final main = primary;
     final container = primaryContainer;
@@ -75,9 +92,9 @@ class AppTheme {
             secondary: container,
             onSecondary: Colors.white,
             surface: surface,
-            onSurface: navy,
-            surfaceContainerLow: surfaceLow,
-            onSurfaceVariant: muted,
+            onSurface: lightNavy,
+            surfaceContainerLow: lightSurfaceLow,
+            onSurfaceVariant: lightMuted,
             error: const Color(0xFFBA1A1A),
           );
 
