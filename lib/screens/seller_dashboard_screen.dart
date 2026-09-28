@@ -213,7 +213,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(color: AppTheme.sand, borderRadius: BorderRadius.circular(20)),
-                  child: Text('${_properties.length}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppTheme.muted)),
+                  child: Text('${_properties.length}', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppTheme.muted)),
                 ),
             ],
           ),
@@ -287,8 +287,8 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(color: AppTheme.sand, shape: BoxShape.circle),
-              child: const Icon(Icons.add_home_work_outlined, size: 34, color: AppTheme.muted),
+              decoration: BoxDecoration(color: AppTheme.sand, shape: BoxShape.circle),
+              child: Icon(Icons.add_home_work_outlined, size: 34, color: AppTheme.muted),
             ),
             const SizedBox(height: 16),
             Text(AppStrings.t('noListingsYetTitle'), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
@@ -296,7 +296,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
             Text(
               AppStrings.t('noListingsYetSubtitle'),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppTheme.muted, fontSize: 12.5),
+              style: TextStyle(color: AppTheme.muted, fontSize: 12.5),
             ),
             const SizedBox(height: 18),
             FilledButton.icon(
@@ -328,7 +328,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 width: 88,
                 height: 88,
                 child: property.photoUrls.isEmpty
-                    ? const ColoredBox(color: AppTheme.sand, child: Icon(Icons.home_rounded, color: AppTheme.muted))
+                    ? ColoredBox(color: AppTheme.sand, child: Icon(Icons.home_rounded, color: AppTheme.muted))
                     : Image.network(ApiClient.instance.assetUrl(property.photoUrls.first), fit: BoxFit.cover),
               ),
             ),
@@ -349,7 +349,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                       ),
                       PopupMenuButton<String>(
                         padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.more_vert_rounded, color: AppTheme.muted, size: 20),
+                        icon: Icon(Icons.more_vert_rounded, color: AppTheme.muted, size: 20),
                         onSelected: (value) {
                           if (value == 'edit') _editProperty(property);
                           if (value == 'delete') _deleteProperty(property);
@@ -366,14 +366,14 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                     children: [
                       _StatusBadge(status: property.status),
                       const SizedBox(width: 8),
-                      const Icon(Icons.place_outlined, size: 13, color: AppTheme.muted),
+                      Icon(Icons.place_outlined, size: 13, color: AppTheme.muted),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
                           property.locationLabel,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: AppTheme.muted, fontSize: 11.5),
+                          style: TextStyle(color: AppTheme.muted, fontSize: 11.5),
                         ),
                       ),
                     ],
