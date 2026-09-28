@@ -387,9 +387,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         child: Container(
           height: screenHeight * 0.92,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 24, offset: Offset(0, -4))],
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 24, offset: Offset(0, -4))],
           ),
           child: SafeArea(
             top: false,
@@ -443,8 +443,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(AppStrings.tParams('stepHeader', {'step': '${_step + 1}', 'total': '$_totalSteps'}), style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700, fontSize: 13)),
-              Text(_stepTitles[_step], style: const TextStyle(color: AppTheme.muted, fontSize: 13)),
+              Text(AppStrings.tParams('stepHeader', {'step': '${_step + 1}', 'total': '$_totalSteps'}), style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text(_stepTitles[_step], style: TextStyle(color: AppTheme.muted, fontSize: 13)),
             ],
           ),
           const SizedBox(height: 8),
@@ -508,7 +508,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 ? AppStrings.t('photosCompleteCaption')
                 : AppStrings.tCount('photosCountCaption', _photos.where((p) => p != null).length),
           ),
-          Text(AppStrings.t('photosInstruction'), style: const TextStyle(color: AppTheme.muted)),
+          Text(AppStrings.t('photosInstruction'), style: TextStyle(color: AppTheme.muted)),
           const SizedBox(height: 14),
           SizedBox(
             height: 110,
@@ -559,7 +559,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                           color: AppTheme.sand,
                           border: Border.all(color: AppTheme.muted.withOpacity(0.3)),
                         ),
-                        child: const Center(child: Icon(Icons.add_photo_alternate_outlined, color: AppTheme.muted, size: 28)),
+                        child: Center(child: Icon(Icons.add_photo_alternate_outlined, color: AppTheme.muted, size: 28)),
                       ),
                     ),
                   ),
@@ -670,7 +670,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   const SizedBox(height: 12),
                   Text(
                     AppStrings.locationProgressMessages[_locationMsgIndex],
-                    style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
+                    style: TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
                   ),
                 ],
                 if (_locationError != null) ...[
@@ -702,12 +702,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded, color: AppTheme.muted),
+                Icon(Icons.info_outline_rounded, color: AppTheme.muted),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     AppStrings.t('documentInfoText'),
-                    style: const TextStyle(color: AppTheme.muted, fontSize: 12.5),
+                    style: TextStyle(color: AppTheme.muted, fontSize: 12.5),
                   ),
                 ),
               ],
@@ -757,7 +757,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               Center(
                 child: Text(
                   AppStrings.paymentProgressMessages[_paymentMsgIndex],
-                  style: const TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
+                  style: TextStyle(color: AppTheme.muted, fontStyle: FontStyle.italic),
                 ),
               ),
             ],
@@ -777,7 +777,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
-            Flexible(child: Text(caption, textAlign: TextAlign.right, style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
+            Flexible(child: Text(caption, textAlign: TextAlign.right, style: TextStyle(color: AppTheme.muted, fontSize: 12))),
           ],
         ),
       );
