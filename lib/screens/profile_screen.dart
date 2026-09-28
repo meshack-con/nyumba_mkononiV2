@@ -21,7 +21,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _signedIn = false;
   AppUser? _user;
-  bool _appearanceExpanded = false;
   bool _primaryColorExpanded = false;
 
   @override
@@ -110,15 +109,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 24),
         _ExpandableSection(
-          title: s('appearance'),
-          expanded: _appearanceExpanded,
-          onTap: () {
-            _toggleAppearance();
-          },
-          child: const _ThemeSelector(),
-        ),
-        const SizedBox(height: 8),
-        _ExpandableSection(
           title: s('primaryColor'),
           expanded: _primaryColorExpanded,
           onTap: () {
@@ -163,14 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _user = null;
       });
     }
-  }
-
-  Future<void> _toggleAppearance() async {
-    if (!_signedIn) {
-      await _openAuth();
-      if (!_signedIn) return;
-    }
-    if (mounted) setState(() => _appearanceExpanded = !_appearanceExpanded);
   }
 
   Future<void> _togglePrimaryColor() async {
@@ -266,67 +248,6 @@ class _ExpandableSection extends StatelessWidget {
           if (expanded) child,
         ],
       );
-}
-
-/// Kichwa "Theme" chenye vitufe vya White / Dark ndani yake.
-class _ThemeSelector extends StatelessWidget {
-  const _ThemeSelector();
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = ThemeController.instance;
-    final scheme = Theme.of(context).colorScheme;
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: scheme.surfaceContainerLow,
-                  foregroundColor: scheme.onSurface,
-                  child: const Icon(Icons.brightness_6_outlined),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  AppStrings.t('theme'),
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: SegmentedButton<ThemeMode>(
-                showSelectedIcon: false,
-                style: SegmentedButton.styleFrom(
-                  selectedBackgroundColor: AppTheme.primary,
-                  selectedForegroundColor: Colors.white,
-                ),
-                segments: [
-                  ButtonSegment(
-                    value: ThemeMode.light,
-                    icon: const Icon(Icons.light_mode_outlined),
-                    label: Text(AppStrings.t('white')),
-                  ),
-                  ButtonSegment(
-                    value: ThemeMode.dark,
-                    icon: const Icon(Icons.dark_mode_outlined),
-                    label: Text(AppStrings.t('dark')),
-                  ),
-                ],
-                selected: {controller.mode},
-                onSelectionChanged: (selection) => controller.setMode(selection.first),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _AccentSelector extends StatelessWidget {
