@@ -330,6 +330,47 @@ def list_properties(
     return list(db.scalars(query).unique().all())
 
 
+# NB: `/properties/mine` LAZIMA itangazwe KABLA ya `/properties/{property_id}`,
+# vinginevyo FastAPI inachukua "mine" kama property_id na kurudisha 422.
+@app.get("/properties/mine", response_model=list[PropertyResponse])
+def list_my_properties(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # Idadi ya "like" (favorites) kwa kila tangazo, na idadi ya ujumbe
+    # usiosomwa uliopokelewa na mpangishaji kwa kila tangazo - hivi
+    # ndivyo "notifications za kweli" anazoziona kwenye dashibodi yake.
+    fav_count_subq = (
+        select(Favorite.property_id, func.count(Favorite.id).label("fav_count"))
+        .group_by(Favorite.property_id)
+        .subquery()
+    )
+    unread_subq = (
+        select(Message.property_id, func.count(Message.id).label("unread_count"))
+        .where(Message.receiver_id == current_user.id, Message.read_at.is_(None))
+        .group_by(Message.property_id)
+        .subquery()
+    )
+    query = (
+        select(
+            Property,
+            func.coalesce(fav_count_subq.c.fav_count, 0),
+            func.coalesce(unread_subq.c.unread_count, 0),
+        )
+        .outerjoin(fav_count_subq, fav_count_subq.c.property_id == Property.id)
+        .outerjoin(unread_subq, unread_subq.c.property_id == Property.id)
+        .where(Property.owner_id == current_user.id)
+        .order_by(Property.created_at.desc())
+    )
+    results: list[PropertyResponse] = []
+    for property_item, fav_count, unread_count in db.execute(query).all():
+        data = PropertyResponse.model_validate(property_item).model_dump()
+        data["favorites_count"] = fav_count
+        data["unread_messages_count"] = unread_count
+        results.append(PropertyResponse(**data))
+    return results
+
+
 @app.get("/properties/{property_id}", response_model=PublicPropertyResponse)
 def get_property(property_id: int, db: Session = Depends(get_db)):
     property_item = db.scalar(select(Property).where(Property.id == property_id, public_property_filter()))
@@ -564,45 +605,6 @@ async def create_property(
     db.commit()
 
     return property_item
-
-
-@app.get("/properties/mine", response_model=list[PropertyResponse])
-def list_my_properties(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    # Idadi ya "like" (favorites) kwa kila tangazo, na idadi ya ujumbe
-    # usiosomwa uliopokelewa na mpangishaji kwa kila tangazo - hivi
-    # ndivyo "notifications za kweli" anazoziona kwenye dashibodi yake.
-    fav_count_subq = (
-        select(Favorite.property_id, func.count(Favorite.id).label("fav_count"))
-        .group_by(Favorite.property_id)
-        .subquery()
-    )
-    unread_subq = (
-        select(Message.property_id, func.count(Message.id).label("unread_count"))
-        .where(Message.receiver_id == current_user.id, Message.read_at.is_(None))
-        .group_by(Message.property_id)
-        .subquery()
-    )
-    query = (
-        select(
-            Property,
-            func.coalesce(fav_count_subq.c.fav_count, 0),
-            func.coalesce(unread_subq.c.unread_count, 0),
-        )
-        .outerjoin(fav_count_subq, fav_count_subq.c.property_id == Property.id)
-        .outerjoin(unread_subq, unread_subq.c.property_id == Property.id)
-        .where(Property.owner_id == current_user.id)
-        .order_by(Property.created_at.desc())
-    )
-    results: list[PropertyResponse] = []
-    for property_item, fav_count, unread_count in db.execute(query).all():
-        data = PropertyResponse.model_validate(property_item).model_dump()
-        data["favorites_count"] = fav_count
-        data["unread_messages_count"] = unread_count
-        results.append(PropertyResponse(**data))
-    return results
 
 
 def _get_own_property(property_id: int, current_user: User, db: Session) -> Property:
