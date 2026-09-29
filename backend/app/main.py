@@ -110,11 +110,6 @@ def create_tables() -> None:
         ))
 
 
-def ensure_seller(user: User) -> None:
-    if user.role != UserRole.SELLER:
-        raise HTTPException(status_code=403, detail="Hatua hii ni ya seller pekee")
-
-
 def public_property_filter():
     now = datetime.now(timezone.utc)
     return and_(
@@ -491,9 +486,11 @@ def delete_message(message_id: int, current_user: User = Depends(get_current_use
     db.commit()
 
 
-# --- Seller-only property endpoints ------------------------------------
-# Hizi zinatumia PropertyResponse kamili (INA verification_doc_url)
-# kwa sababu ni seller mwenyewe, aliyeauthenticate, akiona taarifa zake.
+# --- Property endpoints za mtumiaji aliyeingia (mtu yeyote) -------------
+# Mtumiaji YEYOTE aliyeauthenticate (buyer, seller au admin) anaweza kupakia
+# na kusimamia matangazo yake. Hizi zinatumia PropertyResponse kamili
+# (INA verification_doc_url) kwa sababu ni mwenye tangazo mwenyewe akiona
+# taarifa zake.
 
 @app.post("/properties", response_model=PropertyResponse, status_code=201)
 async def create_property(
@@ -519,7 +516,6 @@ async def create_property(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    ensure_seller(current_user)
     if len(photos) != 3:
         raise HTTPException(status_code=400, detail="Tuma picha 3 za nyumba")
 
@@ -575,7 +571,6 @@ def list_my_properties(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    ensure_seller(current_user)
     # Idadi ya "like" (favorites) kwa kila tangazo, na idadi ya ujumbe
     # usiosomwa uliopokelewa na mpangishaji kwa kila tangazo - hivi
     # ndivyo "notifications za kweli" anazoziona kwenye dashibodi yake.
@@ -612,9 +607,8 @@ def list_my_properties(
 
 def _get_own_property(property_id: int, current_user: User, db: Session) -> Property:
     """Inapata tangazo kwa ID na kuhakikisha ni la mwenye tangazo mwenyewe
-    (seller aliyeautheticate) - vinginevyo 404 (siyo 403, ili tusifichue
+    (mtumiaji aliyeautheticate) - vinginevyo 404 (siyo 403, ili tusifichue
     kuwepo kwa tangazo la mtu mwingine)."""
-    ensure_seller(current_user)
     property_item = db.get(Property, property_id)
     if property_item is None or property_item.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Tangazo halipatikani")
@@ -628,7 +622,7 @@ def update_my_property(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Mwenye tangazo (seller) anahariri taarifa za tangazo lake mwenyewe -
+    """Mwenye tangazo anahariri taarifa za tangazo lake mwenyewe -
     jina, bei, maelezo, huduma zilizopo na eneo. Picha na hati ya
     uthibitisho hazibadilishwi hapa (ni za kudumu tangu kuunda tangazo)."""
     property_item = _get_own_property(property_id, current_user, db)
@@ -659,7 +653,7 @@ def delete_my_property(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Mwenye tangazo (seller) anafuta tangazo lake mwenyewe kabisa kutoka
+    """Mwenye tangazo anafuta tangazo lake mwenyewe kabisa kutoka
     kwenye mfumo (favorites na messages zinazohusiana zinafutika pia -
     cascade). Hatua ya kudumu, haiwezi kutendulika."""
     property_item = _get_own_property(property_id, current_user, db)
