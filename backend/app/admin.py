@@ -4,16 +4,19 @@ na analytics ya dashboard (akaunti mpya na logins kwa muda mbalimbali).
 Router hii yote inalindwa na `ensure_admin` - mtumiaji lazima awe
 ameautheticate NA awe `is_admin=True`.
 """
+import re
+import secrets
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from pydantic import EmailStr, TypeAdapter, ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from .auth import ensure_admin
+from .auth import ensure_admin, hash_password
 from .database import get_db
-from .models import LoginEvent, Notification, Property, PropertyStatus, User, UserRole
+from .models import LoginEvent, Notification, Property, PropertyMode, PropertyStatus, PropertyType, User, UserRole
 from .schemas import AnalyticsPoint, AnalyticsSummary, PropertyResponse
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(ensure_admin)])
@@ -65,6 +68,120 @@ def get_property_for_review(property_id: int, db: Session = Depends(get_db)):
     property_item = db.get(Property, property_id)
     if property_item is None:
         raise HTTPException(status_code=404, detail="Tangazo halipatikani")
+    return property_item
+
+
+def _get_or_create_owner(db: Session, jina: str, simu: str, email: str | None, eneo: str | None) -> User:
+    """Mmiliki wa nyumba iliyowekwa na admin. Mmiliki huyu hahitaji kujisajili
+    kwenye app: tunamtengenezea akaunti ya ndani (username `mmiliki_<namba>`)
+    yenye password isiyoweza kukisiwa, kwa hiyo hawezi kuingia hadi apewe
+    akaunti halisi. Namba ya simu ikirudiwa, mmiliki huyo huyo anatumika tena
+    (nyumba nyingi za mmiliki mmoja hazitengenezi akaunti mpya kila mara)."""
+    digits = re.sub(r"\D", "", simu)
+    if len(digits) < 7:
+        raise HTTPException(status_code=400, detail="Namba ya simu ya mmiliki si sahihi")
+    username = f"mmiliki_{digits}"[:50]
+    owner = db.scalar(select(User).where(User.username == username))
+    if owner is None:
+        owner = User(
+            jina_kamili=jina,
+            namba_ya_simu=simu,
+            username=username,
+            password_hash=hash_password(secrets.token_urlsafe(32)),
+            role=UserRole.SELLER,
+            email=email,
+            eneo=eneo,
+        )
+        db.add(owner)
+        db.flush()
+    else:
+        owner.jina_kamili = jina
+        owner.namba_ya_simu = simu
+        if email:
+            owner.email = email
+        if eneo:
+            owner.eneo = eneo
+    return owner
+
+
+@router.post("/properties", response_model=PropertyResponse, status_code=201)
+async def admin_create_property(
+    jina: str = Form(..., min_length=2, max_length=180),
+    aina: PropertyType = Form(...),
+    mode: PropertyMode = Form(...),
+    price: int = Form(..., ge=0),
+    location_label: str = Form(..., min_length=1, max_length=180),
+    latitude: float = Form(...),
+    longitude: float = Form(...),
+    has_wifi: bool = Form(False),
+    car_parking: bool = Form(False),
+    indoor_toilet: bool = Form(False),
+    has_electricity: bool = Form(False),
+    water_inside: bool = Form(False),
+    water_nearby: bool = Form(False),
+    furnished: bool = Form(False),
+    swimming_pool: bool = Form(False),
+    description: str = Form(..., min_length=1),
+    owner_jina: str = Form(..., min_length=2, max_length=150),
+    owner_simu: str = Form(..., min_length=7, max_length=30),
+    owner_email: str | None = Form(None),
+    owner_eneo: str | None = Form(None),
+    photos: list[UploadFile] = File(...),
+    verification_doc: UploadFile | None = File(None),
+    db: Session = Depends(get_db),
+):
+    """Admin anaweka nyumba moja kwa moja kwa niaba ya mmiliki. Tofauti na
+    `POST /properties` ya watumiaji: HAKUNA malipo ya ada (hakuna Payment),
+    hati ya uthibitisho ni hiari, na tangazo linaingia moja kwa moja kama
+    APPROVED - linaonekana kwa watumiaji mara moja."""
+    # Import hapa (ndani ya function) ili kuepuka circular import - main.py
+    # inaingiza router hii wakati wa kuanza.
+    from .main import save_upload
+
+    if len(photos) != 3:
+        raise HTTPException(status_code=400, detail="Tuma picha 3 za nyumba")
+
+    email: str | None = (owner_email or "").strip() or None
+    if email is not None:
+        try:
+            TypeAdapter(EmailStr).validate_python(email)
+        except ValidationError:
+            raise HTTPException(status_code=400, detail="Barua pepe ya mmiliki si sahihi") from None
+    eneo: str | None = (owner_eneo or "").strip() or None
+
+    # Pakia faili KWANZA - ikishindikana, hakuna akaunti wala tangazo
+    # linalobaki kwenye database.
+    photo_urls = [await save_upload(photo, "properties") for photo in photos]
+    verification_doc_url = ""
+    if verification_doc is not None and verification_doc.filename:
+        verification_doc_url = await save_upload(verification_doc, "verification-docs")
+
+    owner = _get_or_create_owner(db, owner_jina.strip(), owner_simu.strip(), email, eneo)
+    property_item = Property(
+        owner_id=owner.id,
+        jina=jina,
+        aina=aina,
+        mode=mode,
+        price=price,
+        location_label=location_label,
+        latitude=latitude,
+        longitude=longitude,
+        has_wifi=has_wifi,
+        car_parking=car_parking,
+        indoor_toilet=indoor_toilet,
+        has_electricity=has_electricity,
+        water_inside=water_inside,
+        water_nearby=water_nearby,
+        furnished=furnished,
+        swimming_pool=swimming_pool,
+        description=description,
+        photo_urls=photo_urls,
+        verification_doc_url=verification_doc_url,
+        status=PropertyStatus.APPROVED,
+    )
+    db.add(property_item)
+    db.commit()
+    db.refresh(property_item)
     return property_item
 
 
